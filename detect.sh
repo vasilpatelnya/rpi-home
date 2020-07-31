@@ -1,0 +1,1 @@
+cd /home/pi/go/src/gitlab.com/vasilpatelnya/rpi-home && ./detector -device deviceName -type 1

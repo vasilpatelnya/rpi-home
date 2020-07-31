@@ -1,0 +1,45 @@
+package main
+
+import (
+	"flag"
+	"gitlab.com/vasilpatelnya/rpi-home/internal/app/config"
+	"gitlab.com/vasilpatelnya/rpi-home/internal/app/store"
+	"gopkg.in/mgo.v2/bson"
+	"log"
+	"os"
+	"time"
+
+	rpidetectormongo "gitlab.com/vasilpatelnya/rpi-home/internal/app/rpi-detector-mongo"
+)
+
+var defaultDevice = "'неизвестное имя'"
+
+func main() {
+	var event = rpidetectormongo.New()
+	c := config.New("configs/.env") // todo hardcode!!!
+	s, err := store.New(c)
+	if err != nil {
+		log.Fatal("Ошибка создания подключения к БД.")
+	}
+	flag.StringVar(&event.Device, "device", defaultDevice, "Имя камеры")
+	flag.IntVar(&event.Type, "type", rpidetectormongo.TypeUndefined, "Тип события")
+	flag.Parse()
+	log.Printf("Камера %s обнаружила движение. Тип события: %d", event.Device, event.Type)
+	if event.Name != defaultDevice && event.Type != rpidetectormongo.TypeUndefined {
+		event.ID = bson.NewObjectId()
+		event.Name = "Обнаружено движение!"
+		event.Created = time.Now().Unix()
+		event.Updated = time.Now().Unix()
+
+		err = s.Collection.Insert(event)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		log.Println("Создана запись в БД")
+
+		return
+	}
+	log.Println("Не указан тип события или название устройства.")
+	os.Exit(1)
+}
