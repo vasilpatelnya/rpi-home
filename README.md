@@ -1,4 +1,4 @@
-[![codecov](https://codecov.io/gl/vasilpatelnya/rpi-home/branch/%5Cx6d6173746572/graph/badge.svg?token=4JOLJLZW3M)](https://codecov.io/gl/vasilpatelnya/rpi-home)
+[![codecov](https://codecov.io/gh/vasilpatelnya/rpi-home/branch/master/graph/badge.svg)](https://codecov.io/gh/vasilpatelnya/rpi-home)
 
 # rpi-home
 
