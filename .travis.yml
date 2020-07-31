@@ -2,6 +2,8 @@ language: go
 
 env:
   - GO111MODULE=on
+  global:
+    - TRAVIS_GO_VERSION="$(cat .go-version)"
 
 go:
   - 1.14.4
