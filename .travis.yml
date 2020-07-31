@@ -13,7 +13,7 @@ before_install:
 services: mongodb
 
 before_script:
-  - mongo rpi
+  - mongo rpi --eval 'db.createUser({user:"travis",pwd:"test",roles:["readWrite"]});'
 
 script:
   - go test ./internal/app/rpi-detector-mongo -race -coverprofile=coverage.txt -covermode=atomic
