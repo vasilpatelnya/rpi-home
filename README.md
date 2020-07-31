@@ -1,5 +1,5 @@
+[![Build Status](https://travis-ci.com/vasilpatelnya/rpi-home.svg?branch=master)](https://travis-ci.com/vasilpatelnya/rpi-home)
 [![codecov](https://codecov.io/gh/vasilpatelnya/rpi-home/branch/master/graph/badge.svg)](https://codecov.io/gh/vasilpatelnya/rpi-home)
-
 # rpi-home
 
 Все приложение представляет собой:
