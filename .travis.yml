@@ -9,8 +9,8 @@ go:
   - 1.14.4
   - tip
 
-#before_install:
-#  - go get -t -v ./...
+before_install:
+  - go get -t -v ./...
 
 script:
   - go test ./internal/app/rpi-detector-mongo -race -coverprofile=coverage.txt -covermode=atomic
