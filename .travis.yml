@@ -10,6 +10,11 @@ go:
 before_install:
   - go get -t -v ./...
 
+services: mongodb
+
+before_script:
+  - mongo rpi
+
 script:
   - go test ./internal/app/rpi-detector-mongo -race -coverprofile=coverage.txt -covermode=atomic
 
