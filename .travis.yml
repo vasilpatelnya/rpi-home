@@ -1,8 +1,7 @@
 language: go
 
 env:
-  - GO111MODULE=on
-  - CODECOV_TOKEN="b9afdeee-b8eb-4a3b-afea-d0b38375b635"
+  - GO111MODULE=on CODECOV_TOKEN="b9afdeee-b8eb-4a3b-afea-d0b38375b635"
 
 go:
   - 1.14.4
