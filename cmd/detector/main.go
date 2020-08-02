@@ -16,7 +16,7 @@ var defaultDevice = "'неизвестное имя'"
 
 func main() {
 	var event = rpidetectormongo.New()
-	c := config.New("configs/.env") // todo hardcode!!!
+	c := config.New("configs/dev.env")
 	s, err := store.New(c)
 	if err != nil {
 		log.Fatal("Ошибка создания подключения к БД.")

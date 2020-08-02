@@ -19,13 +19,16 @@ type Store struct {
 
 func New(c *config.Config) (*Store, error) {
 	var client *mgo.Session
-	for {
+	for i := 0; i <= c.DbConnectAttempts; i++ {
 		var err error
 		client, err = getConnection(c)
 
 		if err != nil {
 			log.Println("Ошибка подключения к базе")
-			time.Sleep(time.Second * 20)
+			if i == c.DbConnectAttempts {
+				return nil, err
+			}
+			time.Sleep(time.Second * time.Duration(c.DbTimeBetweenAttempts))
 			continue
 		}
 

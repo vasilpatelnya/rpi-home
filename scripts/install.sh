@@ -62,7 +62,7 @@ cd /home/pi/go/src/github.com/vasilpatelnya/rpi-home
 
 sed -e 's/exit 0/\n/' /etc/rc.local > file
 echo "cd /home/pi/go/src/github.com/vasilpatelnya/rpi-home" >> file
-echo "sudo ./daemon" >> file
+echo "sudo ./daemon -c configs/prod.env" >> file
 echo "exit 0" >> file
 cat file > /etc/rc.local
 rm file

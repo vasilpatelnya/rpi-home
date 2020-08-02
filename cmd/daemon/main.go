@@ -11,7 +11,7 @@ import (
 var configPath string
 
 func init() {
-	flag.StringVar(&configPath, "c", "configs/.env", "путь к конфигурационному файлу")
+	flag.StringVar(&configPath, "c", "configs/dev.env", "путь к конфигурационному файлу")
 }
 
 func main() {
