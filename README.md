@@ -13,7 +13,10 @@
 3. Подключить к модему RPi через LAN-кабель.
 4. `ping raspberrypi.local` покажет ip (лучше чтобы в сети была одна RPi)
 5. Подключаемся по ssh к RPi и меняем пароль пользователя pi.
-6. [Устанавливаем motioneye:](https://groups.google.com/forum/#!topic/motioneye/wxdFOn2a28M)
+
+## Установка окружения.
+
+1. [Устанавливаем motioneye:](https://groups.google.com/forum/#!topic/motioneye/wxdFOn2a28M)
 
    `sudo apt-get update`
    
@@ -43,7 +46,7 @@
    
    `sudo reboot`
    
-9. [Устанавливаем MongoDB на RPi.](https://pimylifeup.com/mongodb-raspberry-pi/)
+2. [Устанавливаем MongoDB на RPi.](https://pimylifeup.com/mongodb-raspberry-pi/)
     
     `sudo apt update`
     
@@ -54,7 +57,7 @@
     `sudo systemctl enable mongodb`
     
     `sudo systemctl start mongodb`
-10. Устанавливаем Go на RPi.
+3. Устанавливаем Go на RPi.
     
     Скачиваем версию для RPi из списка на странице [https://golang.org/dl/](https://golang.org/dl/) `wget https://golang.org/dl/go1.14.4.linux-armv6l.tar.gz`
 
@@ -65,6 +68,7 @@
     В конец файла .profile добавляем также "export PATH=$PATH:/usr/local/go/bin"
     
     Проверяем: `go version`
+    
 ## Отправка сообщений на телеграм.
 
 1. [Установить telegram-send.](https://github.com/rahiel/telegram-send) `sudo pip3 install telegram-send`
