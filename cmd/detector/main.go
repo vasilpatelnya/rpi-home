@@ -31,8 +31,8 @@ func main() {
 		if event.Type == rpidetectormongo.TypeMovieReady {
 			event.Name = "Новое видео готово!"
 		}
-		event.Created = time.Now().Unix()
-		event.Updated = time.Now().Unix()
+		event.Created = time.Now().UnixNano()
+		event.Updated = time.Now().UnixNano()
 
 		err = s.Collection.Insert(event)
 		if err != nil {
