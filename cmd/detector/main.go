@@ -2,14 +2,14 @@ package main
 
 import (
 	"flag"
-	"gitlab.com/vasilpatelnya/rpi-home/internal/app/config"
-	"gitlab.com/vasilpatelnya/rpi-home/internal/app/store"
+	"github.com/vasilpatelnya/rpi-home/internal/app/config"
+	"github.com/vasilpatelnya/rpi-home/internal/app/store"
 	"gopkg.in/mgo.v2/bson"
 	"log"
 	"os"
 	"time"
 
-	rpidetectormongo "gitlab.com/vasilpatelnya/rpi-home/internal/app/rpi-detector-mongo"
+	rpidetectormongo "github.com/vasilpatelnya/rpi-home/internal/app/rpi-detector-mongo"
 )
 
 var defaultDevice = "'неизвестное имя'"
@@ -28,6 +28,9 @@ func main() {
 	if event.Name != defaultDevice && event.Type != rpidetectormongo.TypeUndefined {
 		event.ID = bson.NewObjectId()
 		event.Name = "Обнаружено движение!"
+		if event.Type == rpidetectormongo.TypeMovieReady {
+			event.Name = "Новое видео готово!"
+		}
 		event.Created = time.Now().Unix()
 		event.Updated = time.Now().Unix()
 

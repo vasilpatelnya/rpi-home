@@ -2,7 +2,7 @@ package rpi_detector_mongo
 
 import (
 	"fmt"
-	"gitlab.com/vasilpatelnya/rpi-home/internal/app/tgpost"
+	"github.com/vasilpatelnya/rpi-home/internal/app/tgpost"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"io/ioutil"

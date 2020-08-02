@@ -2,7 +2,7 @@ package store
 
 import (
 	"github.com/stretchr/testify/assert"
-	"gitlab.com/vasilpatelnya/rpi-home/internal/app/config"
+	"github.com/vasilpatelnya/rpi-home/internal/app/config"
 	"log"
 	"testing"
 )

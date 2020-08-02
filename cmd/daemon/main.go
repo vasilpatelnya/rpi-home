@@ -2,9 +2,9 @@ package main
 
 import (
 	"flag"
-	"gitlab.com/vasilpatelnya/rpi-home/internal/app/daemon"
-	rpidetectormongo "gitlab.com/vasilpatelnya/rpi-home/internal/app/rpi-detector-mongo"
-	"gitlab.com/vasilpatelnya/rpi-home/internal/app/tgpost"
+	"github.com/vasilpatelnya/rpi-home/internal/app/daemon"
+	rpidetectormongo "github.com/vasilpatelnya/rpi-home/internal/app/rpi-detector-mongo"
+	"github.com/vasilpatelnya/rpi-home/internal/app/tgpost"
 	"log"
 )
 

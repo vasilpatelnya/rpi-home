@@ -1,7 +1,7 @@
 package store
 
 import (
-	"gitlab.com/vasilpatelnya/rpi-home/internal/app/config"
+	"github.com/vasilpatelnya/rpi-home/internal/app/config"
 	"gopkg.in/mgo.v2"
 	"log"
 	"time"

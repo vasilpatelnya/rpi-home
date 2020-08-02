@@ -2,8 +2,8 @@ package rpi_detector_mongo
 
 import (
 	"github.com/stretchr/testify/assert"
-	"gitlab.com/vasilpatelnya/rpi-home/internal/app/config"
-	"gitlab.com/vasilpatelnya/rpi-home/internal/app/store"
+	"github.com/vasilpatelnya/rpi-home/internal/app/config"
+	"github.com/vasilpatelnya/rpi-home/internal/app/store"
 	"reflect"
 	"testing"
 )
