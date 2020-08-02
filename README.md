@@ -86,6 +86,14 @@
 
     sudo cp /home/pi/go/src/github.com/vasilpatelnya/rpi-home/scripts/new_video.sh /var/lib/motioneye/new_video.sh
     
+    sudo chmod +x /var/lib/motioneye/detect.sh
+    
+    sudo chmod 777 /var/lib/motioneye/detect.sh
+    
+    sudo chmod +x /var/lib/motioneye/new_video.sh
+    
+    sudo chmod 777 /var/lib/motioneye/new_video.sh
+    
 1. Прописать путь до скриптов в поле `Run A Command` до detect.sh в поле `Run An End Command` до new_video.sh.
 
 ## Устанавливаем демон в автозагрузку например в /etc/rc.local
