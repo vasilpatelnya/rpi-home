@@ -5,4 +5,10 @@ cp /home/pi/go/src/github.com/vasilpatelnya/rpi-home/scripts/new_video.sh /var/l
 
 cd /home/pi/go/src/github.com/vasilpatelnya/rpi-home
 /usr/local/go/bin/go build -o detector -v ./cmd/detector/main.go && /usr/local/go/bin/go build -o daemon -v ./cmd/daemon/main.go
-./daemon &
+
+sed -e 's/exit 0/\n/' /etc/rc.local >> file
+echo "cd /home/pi/go/src/github.com/vasilpatelnya/rpi-home" >> file
+echo "sudo ./daemon" >> file
+echo "exit 0" >> file
+cat file > /etc/rc.local
+rm file
