@@ -101,4 +101,4 @@
 Перед `exit 0` добавляем:
 
     cd /home/pi/go/src/github.com/vasilpatelnya/rpi-home
-    sudo ./daemon
+    sudo ./daemon -c configs/prod.env
