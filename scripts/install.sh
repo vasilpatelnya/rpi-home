@@ -54,22 +54,15 @@ pip3 install telegram-send
 telegram-send --configure
 echo -e "${GREEN}finish telegram-send installation${NORMAL}"
 
-#Запись срабатывания в БД.
-#Скомпилировать приложение в корень (можно в любую директорию).
-#
-#Прописать путь к приложению в настройках камеры в motioneye:
-#
-#/home/pi/go/src/github.com/vasilpatelnya/rpi-home/detector -device room -type 1
-#
-#Где device это название камеры в motioneye, а тип со значением 1 это константа для детектирования камерой движения.
-#
-#Поместить скрипт detect.sh /var/lib/motioneye
-#sudo chmod +x /var/lib/motioneye/detect.sh
-#
-#sudo chmod 777 /var/lib/motioneye/detect.sh
-#Прописать путь до скрипта в поле Run A Command в motioneye.
-#Устанавливаем демон в автозагрузку например в /etc/rc.local
-#Перед exit 0 добавляем:
-#
-#cd /home/pi/go/src/github.com/vasilpatelnya/rpi-home
-#sudo ./daemon
+cp /home/pi/go/src/github.com/vasilpatelnya/rpi-home/scripts/detect.sh /var/lib/motioneye/detect.sh
+cp /home/pi/go/src/github.com/vasilpatelnya/rpi-home/scripts/new_video.sh /var/lib/motioneye/new_video.sh
+
+cd /home/pi/go/src/github.com/vasilpatelnya/rpi-home
+/usr/local/go/bin/go build -o detector -v ./cmd/detector/main.go && /usr/local/go/bin/go build -o daemon -v ./cmd/daemon/main.go
+
+sed -e 's/exit 0/\n/' /etc/rc.local >> file
+echo "cd /home/pi/go/src/github.com/vasilpatelnya/rpi-home" >> file
+echo "sudo ./daemon" >> file
+echo "exit 0" >> file
+cat file > /etc/rc.local
+rm file
