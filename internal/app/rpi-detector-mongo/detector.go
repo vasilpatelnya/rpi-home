@@ -87,7 +87,7 @@ func (e *Event) HandlerMotionReady(dirname string) (int, error) {
 		fp := fmt.Sprintf("%s/%s/%s", dirname, todayDir, f.Name())
 		ext := filepath.Ext(f.Name())
 		if ext == os.Getenv("FILE_EXTENSION") && f.Size() > 0 {
-			err := tgpost.SendFile(fp, "Видео от "+time.Unix(e.Created/1000, 0).String())
+			err := tgpost.SendFile(fp, "Видео от "+time.Unix(e.Created/1000000000, 0).String())
 			if err != nil {
 				log.Println("Ошибка при попытке отправить видео", f.Name(), err)
 
