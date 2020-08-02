@@ -4,5 +4,5 @@ cp /home/pi/go/src/github.com/vasilpatelnya/rpi-home/scripts/detect.sh /var/lib/
 cp /home/pi/go/src/github.com/vasilpatelnya/rpi-home/scripts/new_video.sh /var/lib/motioneye/new_video.sh
 
 cd ..
-/usr/local/go/bin/go build -o detector -v ./cmd/detector/main.go && /usr/local/go/bin/go build -o daemon -v ./cmd/daemon/main.go
-./daemon &
+/usr/local/go/bin/go build -o detector -v /home/pi/go/src/github.com/vasilpatelnya/rpi-home/cmd/detector/main.go && /usr/local/go/bin/go build -o daemon -v /home/pi/go/src/github.com/vasilpatelnya/rpi-home/cmd/daemon/main.go
+/home/pi/go/src/github.com/vasilpatelnya/rpi-home/daemon &
