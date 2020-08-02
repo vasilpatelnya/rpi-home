@@ -1,10 +1,23 @@
+#!/bin/bash
+
+RED='\033[0;31m'         #  ${RED}
+GREEN='\033[0;32m'      #  ${GREEN}
+NORMAL='\033[0m'      #  ${NORMAL}
+
+# Обновляем ОС.
+
+echo -e "${GREEN}Updating system${NORMAL}"
+apt-get -yqq update
+apt-get -yqq dist-upgrade
+echo -e "${GREEN}finish updating${NORMAL}"
+
 # Устанавливаем motioneye.
 
-apt-get update
-apt-get dist-upgrade
-apt-get install libssl-dev libcurl4-openssl-dev libmariadbclient18 libpq5 mysql-common ffmpeg
-wget https://github.com/Motion-Project/motion/releases/download/release-4.0.1/pi_stretch_motion_4.0.1-1_armhf.deb
-dpkg -i pi_stretch_motion_4.0.1-1_armhf.deb
+echo -e "${GREEN}install motion eye${NORMAL}"
+apt-get -yqq install libssl-dev libcurl4-openssl-dev libmariadbclient-dev libpq5 mysql-common ffmpeg libmicrohttpd12
+wget https://github.com/Motion-Project/motion/releases/download/release-4.2.2/pi_buster_motion_4.2.2-1_armhf.deb
+dpkg -i pi_buster_motion_4.2.2-1_armhf.deb
+rm pi_buster_motion_4.2.2-1_armhf.deb
 pip install motioneye
 mkdir -p /etc/motioneye
 cp /usr/local/share/motioneye/extra/motioneye.conf.sample /etc/motioneye/motioneye.conf
@@ -13,25 +26,33 @@ cp /usr/local/share/motioneye/extra/motioneye.systemd-unit-local /etc/systemd/sy
 systemctl daemon-reload
 systemctl enable motioneye
 systemctl start motioneye
+echo -e "${GREEN}motioneye has been installed${NORMAL}"
 
 # Устанавливаем MongoDB.
 
-apt update
-apt upgrade
-apt install mongodb
+echo -e "${GREEN}install mongodb${NORMAL}"
+apt -yqq update
+apt -yqq upgrade
+apt -yqq install mongodb
 systemctl enable mongodb
 systemctl start mongodb
+echo -e ${GREEN}"mongodb has been installed${NORMAL}"
 
 # Устанавливаем Go.
 
+echo -e "${GREEN}golang installation${NORMAL}"
 wget https://golang.org/dl/go1.14.4.linux-armv6l.tar.gz
 tar -C /usr/local -xzf go1.14.4.linux-armv6l.tar.gz
-export PATH=$PATH:/usr/local/go/bin
+echo "\nPATH=$PATH:/usr/local/go/bin\n" >> /home/pi/.profile
+rm go1.14.4.linux-armv6l.tar.gz
+echo -e "${GREEN}finish golang installation${NORMAL}"
 
 # В конец файла .profile добавляем также "export PATH=$PATH:/usr/local/go/bin"
 
+echo -e "${GREEN}telegram-send installation${NORMAL}"
 pip3 install telegram-send
 telegram-send --configure
+echo -e "${GREEN}finish telegram-send installation${NORMAL}"
 
 #Запись срабатывания в БД.
 #Скомпилировать приложение в корень (можно в любую директорию).
