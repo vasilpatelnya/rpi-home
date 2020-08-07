@@ -60,7 +60,7 @@ func mainHandler(d *daemon.Daemon, s int) {
 				}
 			case rpidetectormongo.TypeMovieReady:
 				log.Println("Видео готово!")
-				e.Status, err = e.HandlerMotionReady(d.Config.MoviesDirCamera1)
+				e.Status, err = e.HandlerMotionReady(d.Config.MoviesDirCamera1, "./backup")
 				if err != nil {
 					log.Println("Ошибка обработки события:", e.Name, err)
 				}

@@ -20,6 +20,8 @@ const (
 	TypeUndefined  int = 0
 	TypeMotion     int = 1
 	TypeMovieReady int = 2
+
+	MaxSize int64 = 50 * 1024 * 1024
 )
 
 type Event struct {
@@ -75,7 +77,7 @@ func (e *Event) GetMotionMessage() string {
 	return text + add
 }
 
-func (e *Event) HandlerMotionReady(dirname string) (int, error) {
+func (e *Event) HandlerMotionReady(dirname string, backupPath string) (int, error) {
 	l, err := tgpost.GetTodayFileList(dirname)
 	if err != nil {
 		log.Println("Ошибка получения списка файлов в директории:", err.Error())
@@ -86,7 +88,7 @@ func (e *Event) HandlerMotionReady(dirname string) (int, error) {
 		todayDir := tgpost.GetTodayDir()
 		fp := fmt.Sprintf("%s/%s/%s", dirname, todayDir, f.Name())
 		ext := filepath.Ext(f.Name())
-		if ext == os.Getenv("FILE_EXTENSION") && f.Size() > 0 {
+		if ext == os.Getenv("FILE_EXTENSION") && f.Size() > 0 && f.Size() < MaxSize {
 			err := tgpost.SendFile(fp, "Видео от "+time.Unix(e.Created/1000000000, 0).String())
 			if err != nil {
 				log.Println("Ошибка при попытке отправить видео", f.Name(), err)
@@ -100,7 +102,7 @@ func (e *Event) HandlerMotionReady(dirname string) (int, error) {
 
 				return tgpost.StatusNotSent, err
 			}
-			err = ioutil.WriteFile("./backup/"+f.Name(), box, 0777)
+			err = ioutil.WriteFile(backupPath+"/"+f.Name(), box, 0777)
 			if err != nil {
 				log.Println("Ошибка при попытке скопировать файл:", f.Name(), err)
 
