@@ -7,9 +7,15 @@ import (
 	"strconv"
 )
 
-const TestCfgFilename = "test.env"
+const (
+	AppDev          = "dev"
+	AppProd         = "prod"
+	AppTest         = "test"
+	TestCfgFilename = "test.env"
+)
 
 type Config struct {
+	AppMode               string
 	MainTickerTime        uint16
 	DbConnectionUrl       string
 	DbName                string
@@ -29,6 +35,7 @@ func New(p string) *Config {
 	tba := ConvertEnvVarToInt(p, "DB_TIME_BETWEEN_ATTEMPTS")
 
 	return &Config{
+		AppMode:               os.Getenv("APP_MODE"),
 		MainTickerTime:        uint16(mtt),
 		DbConnectionUrl:       os.Getenv("DB_CONNECTION_URL"),
 		DbName:                os.Getenv("DB_NAME"),

@@ -19,6 +19,7 @@ import (
 const (
 	testDirPath = "../../../testDir"
 	backupPath  = "../../../backup"
+	configPath  = "./../../../configs/test.env"
 )
 
 type Stats struct {
@@ -40,7 +41,7 @@ func TestNew(t *testing.T) {
 }
 
 func TestEvent_GetAllByStatus(t *testing.T) {
-	c := config.New("./../../../configs/test.env")
+	c := config.New(configPath)
 	s, err := store.New(c)
 	assert.Nil(t, err)
 	_, err = GetAllByStatus(s.Collection, StatusNew)
@@ -48,7 +49,7 @@ func TestEvent_GetAllByStatus(t *testing.T) {
 }
 
 func TestEvent_Save(t *testing.T) {
-	c := config.New("./../../../configs/test.env")
+	c := config.New(configPath)
 	s, err := store.New(c)
 	assert.Nil(t, err)
 	event := &Event{
@@ -66,6 +67,8 @@ func TestEvent_Save(t *testing.T) {
 
 func TestEvent_HandlerMotionReady(t *testing.T) {
 	err := os.Setenv("FILE_EXTENSION", ".mp4")
+	assert.Nil(t, err)
+	err = os.Setenv("APP_MODE", config.AppTest)
 	assert.Nil(t, err)
 	event := &Event{
 		ID:      bson.NewObjectId(),
@@ -88,6 +91,7 @@ func TestEvent_HandlerMotionReady(t *testing.T) {
 	statsBackupDirEnd, err := getStats(testDirPath)
 	assert.Nil(t, err)
 	assert.Equal(t, statsTestDirEnd.All, statsTestDirStart.All-statsTestDirStart.RightFiles)
+	// todo здесь спотыкается тест - разобраться.
 	assert.Equal(t, statsBackupDirEnd.All, statsBackupDirStart.All+statsTestDirStart.RightFiles)
 
 	files, err := ioutil.ReadDir(backupPath)

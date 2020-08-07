@@ -2,6 +2,7 @@ package rpi_detector_mongo
 
 import (
 	"fmt"
+	"github.com/vasilpatelnya/rpi-home/internal/app/config"
 	"github.com/vasilpatelnya/rpi-home/internal/app/tgpost"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -89,11 +90,15 @@ func (e *Event) HandlerMotionReady(dirname string, backupPath string) (int, erro
 		fp := fmt.Sprintf("%s/%s/%s", dirname, todayDir, f.Name())
 		ext := filepath.Ext(f.Name())
 		if ext == os.Getenv("FILE_EXTENSION") && f.Size() > 0 && f.Size() < MaxSize {
-			err := tgpost.SendFile(fp, "Видео от "+time.Unix(e.Created/1000000000, 0).String())
-			if err != nil {
-				log.Println("Ошибка при попытке отправить видео", f.Name(), err)
+			if os.Getenv("APP_MODE") != config.AppTest {
+				err := tgpost.SendFile(fp, "Видео от "+time.Unix(e.Created/1000000000, 0).String())
+				if err != nil {
+					log.Println("Ошибка при попытке отправить видео", f.Name(), err)
 
-				return tgpost.StatusNotSent, err
+					return tgpost.StatusNotSent, err
+				}
+			} else {
+				log.Println("Вы находитесь в тестовом режиме. Отправка файлов игнорируется.")
 			}
 			log.Printf("файл %s был отправлен в телеграм", fp)
 			box, err := ioutil.ReadFile(fp)
