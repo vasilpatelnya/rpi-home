@@ -6,7 +6,7 @@ build:
 
 .PHONY: build-daemon-run
 build-daemon-run:
-	/usr/local/go/bin/go build -o daemon -v ./cmd/daemon/main.go && ./daemon
+	/usr/local/go/bin/go build -o daemon -v ./cmd/daemon/main.go && sudo ./daemon
 
 .PHONY: test
 test:
