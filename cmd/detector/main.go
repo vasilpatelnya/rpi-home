@@ -16,7 +16,10 @@ var defaultDevice = "'неизвестное имя'"
 
 func main() {
 	var event = rpidetectormongo.New()
-	c := config.New("configs/dev.env")
+	c, err := config.New("configs/dev.env")
+	if err != nil {
+		log.Fatal("Ошибка загрузки env файла.")
+	}
 	s, err := store.New(c)
 	if err != nil {
 		log.Fatal("Ошибка создания подключения к БД.")
