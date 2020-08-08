@@ -3,6 +3,7 @@ package rpi_detector_mongo
 import (
 	"fmt"
 	"github.com/vasilpatelnya/rpi-home/internal/app/config"
+	sentry_helper "github.com/vasilpatelnya/rpi-home/internal/app/sentry-helper"
 	"github.com/vasilpatelnya/rpi-home/internal/app/tgpost"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -107,36 +108,43 @@ func (e *Event) VideoReadyHandler(dirname string, backupPath string) (int, error
 		todayDir := tgpost.GetTodayDir()
 		fp := fmt.Sprintf("%s/%s/%s", dirname, todayDir, f.Name())
 		ext := filepath.Ext(f.Name())
-		if ext == os.Getenv("FILE_EXTENSION") && f.Size() > 0 && f.Size() < MaxSize {
-			if os.Getenv("APP_MODE") != config.AppTest {
-				msg := e.GetVideoReadyMessage()
-				err := tgpost.SendFile(fp, msg)
+		if ext == os.Getenv("FILE_EXTENSION") && f.Size() > 0 {
+			if f.Size() < MaxSize {
+				if os.Getenv("APP_MODE") != config.AppTest {
+					msg := e.GetVideoReadyMessage()
+					err := tgpost.SendFile(fp, msg)
+					if err != nil {
+						log.Println("Ошибка при попытке отправить видео", f.Name(), err)
+
+						return tgpost.StatusNotSent, err
+					}
+				} else {
+					log.Println("Вы находитесь в тестовом режиме. Отправка файлов игнорируется.")
+				}
+				log.Printf("файл %s был отправлен в телеграм", fp)
+				box, err := ioutil.ReadFile(fp)
 				if err != nil {
-					log.Println("Ошибка при попытке отправить видео", f.Name(), err)
+					log.Println("Ошибка при попытке прочитать файл:", f.Name(), err)
+
+					return tgpost.StatusNotSent, err
+				}
+				err = ioutil.WriteFile(backupPath+"/"+f.Name(), box, 0777)
+				if err != nil {
+					log.Println("Ошибка при попытке скопировать файл:", f.Name(), err)
+
+					return tgpost.StatusNotSent, err
+				}
+				err = os.Remove(fp)
+				if err != nil {
+					log.Println("Ошибка при попытке удалить файл:", f.Name(), err)
 
 					return tgpost.StatusNotSent, err
 				}
 			} else {
-				log.Println("Вы находитесь в тестовом режиме. Отправка файлов игнорируется.")
-			}
-			log.Printf("файл %s был отправлен в телеграм", fp)
-			box, err := ioutil.ReadFile(fp)
-			if err != nil {
-				log.Println("Ошибка при попытке прочитать файл:", f.Name(), err)
-
-				return tgpost.StatusNotSent, err
-			}
-			err = ioutil.WriteFile(backupPath+"/"+f.Name(), box, 0777)
-			if err != nil {
-				log.Println("Ошибка при попытке скопировать файл:", f.Name(), err)
-
-				return tgpost.StatusNotSent, err
-			}
-			err = os.Remove(fp)
-			if err != nil {
-				log.Println("Ошибка при попытке удалить файл:", f.Name(), err)
-
-				return tgpost.StatusNotSent, err
+				if os.Getenv("APP_MODE") != config.AppTest {
+					err := tgpost.SendText("Файл слишком велик чтобы его пересылать в Telegram. Вы можете его посмотреть через веб-интерфейс. Имя файла: " + f.Name())
+					sentry_helper.Handle(err, "Не удалось отправить текстовое сообщение о превышении размера видеофайла.")
+				}
 			}
 		}
 	}
