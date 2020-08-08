@@ -2,8 +2,10 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"github.com/vasilpatelnya/rpi-home/internal/app/daemon"
 	rpidetectormongo "github.com/vasilpatelnya/rpi-home/internal/app/rpi-detector-mongo"
+	sentryhelper "github.com/vasilpatelnya/rpi-home/internal/app/sentry-helper"
 	"github.com/vasilpatelnya/rpi-home/internal/app/tgpost"
 	"log"
 )
@@ -17,6 +19,7 @@ func init() {
 func main() {
 	flag.Parse()
 	d := daemon.New(configPath)
+	sentryhelper.Start()
 	defer log.Println("Главный цикл завершился...")
 	defer d.Ticker.Stop()
 	for {
@@ -35,7 +38,7 @@ func main() {
 func mainHandler(d *daemon.Daemon, s int) {
 	events, err := rpidetectormongo.GetAllByStatus(d.Store.Collection, s)
 	if err != nil {
-		log.Println("Ошибка получения записей событий из БД")
+		sentryhelper.Handle(err, "Ошибка получения записей событий из БД")
 	}
 	if len(events) > 0 {
 		for _, e := range events {
@@ -43,12 +46,14 @@ func mainHandler(d *daemon.Daemon, s int) {
 			case rpidetectormongo.TypeMotion:
 				status, err := d.MotionHandler(&e)
 				if err != nil {
-					log.Println("Ошибка обработки события:", err)
+					msg := fmt.Sprintf("Ошибка обработки события: %s, %s", e.Name, err.Error())
+					sentryhelper.Handle(err, msg)
 					if status == tgpost.StatusNotSent {
 						e.Status = rpidetectormongo.StatusFail
 						err = e.Save(d.Store.Collection)
 						if err != nil {
-							log.Println("Ошибка сохранения события:", e.Name, err)
+							msg := fmt.Sprintf("Ошибка сохранения события: %s, %s", e.Name, err.Error())
+							sentryhelper.Handle(err, msg)
 						}
 						continue
 					}
@@ -56,18 +61,21 @@ func mainHandler(d *daemon.Daemon, s int) {
 				e.Status = rpidetectormongo.StatusReady
 				err = e.Save(d.Store.Collection)
 				if err != nil {
-					log.Println("Ошибка сохранения события:", e.Name, err)
+					msg := fmt.Sprintf("Ошибка сохранения события: %s, %s", e.Name, err.Error())
+					sentryhelper.Handle(err, msg)
 				}
 			case rpidetectormongo.TypeMovieReady:
 				log.Println("Видео готово!")
 				e.Status, err = e.HandlerMotionReady(d.Config.MoviesDirCamera1, "./backup")
 				if err != nil {
-					log.Println("Ошибка обработки события:", e.Name, err)
+					msg := fmt.Sprintf("Ошибка обработки события: %s, %s", e.Name, err.Error())
+					sentryhelper.Handle(err, msg)
 				}
 
 				err = e.SaveUpdated(d.Store.Collection, e.Status)
 				if err != nil {
-					log.Println("Ошибка сохранения события:", e.Name, err)
+					msg := fmt.Sprintf("Ошибка сохранения события: %s, %s", e.Name, err.Error())
+					sentryhelper.Handle(err, msg)
 				}
 			}
 		}
