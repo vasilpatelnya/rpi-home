@@ -52,6 +52,7 @@ func TestEvent_Save(t *testing.T) {
 	c := config.New(configPath)
 	s, err := store.New(c)
 	assert.Nil(t, err)
+	defer teardown(s)
 	event := &Event{
 		ID:      bson.NewObjectId(),
 		Type:    1,
@@ -131,6 +132,29 @@ func TestEvent_VideoReadyHandler(t *testing.T) {
 	}
 }
 
+func TestEvent_SaveUpdated(t *testing.T) {
+	c := config.New(configPath)
+	s, err := store.New(c)
+	assert.Nil(t, err)
+	defer teardown(s)
+	event := &Event{
+		ID:      bson.NewObjectId(),
+		Type:    TypeMovieReady,
+		Status:  StatusFail,
+		Name:    "test save updated",
+		Device:  "test",
+		Created: time.Now().UnixNano(),
+		Updated: time.Now().UnixNano(),
+	}
+	err = event.SaveUpdated(s.Collection, event.Status)
+	assert.Nil(t, err)
+	var res Event
+	q := s.Collection.Find(bson.M{"_id": event.ID})
+	err = q.One(&res)
+	assert.Nil(t, err)
+	assert.Equal(t, event.Name, res.Name)
+}
+
 func getStats(path string) (*Stats, error) {
 	files, err := ioutil.ReadDir(path)
 	if err != nil {
@@ -151,4 +175,12 @@ func getStats(path string) (*Stats, error) {
 	}
 
 	return &stats, nil
+}
+
+func teardown(s *store.Store) {
+	_, err := s.Collection.RemoveAll(bson.M{})
+	if err != nil {
+		log.Println("Ошибка при удалении коллекции", s.Collection.Name, err)
+	}
+	s.Connection.Close()
 }
