@@ -3,7 +3,7 @@ package rpi_detector_mongo
 import (
 	"fmt"
 	"github.com/vasilpatelnya/rpi-home/internal/app/config"
-	sentry_helper "github.com/vasilpatelnya/rpi-home/internal/app/sentry-helper"
+	sentryhelper "github.com/vasilpatelnya/rpi-home/internal/app/sentry-helper"
 	"github.com/vasilpatelnya/rpi-home/internal/app/tgpost"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -143,7 +143,7 @@ func (e *Event) VideoReadyHandler(dirname string, backupPath string) (int, error
 			} else {
 				if os.Getenv("APP_MODE") != config.AppTest {
 					err := tgpost.SendText("Файл слишком велик чтобы его пересылать в Telegram. Вы можете его посмотреть через веб-интерфейс. Имя файла: " + f.Name())
-					sentry_helper.Handle(err, "Не удалось отправить текстовое сообщение о превышении размера видеофайла.")
+					sentryhelper.Handle(err, "Не удалось отправить текстовое сообщение о превышении размера видеофайла.")
 				}
 			}
 		}

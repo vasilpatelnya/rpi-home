@@ -107,29 +107,25 @@ func TestEvent_VideoReadyHandler(t *testing.T) {
 	assert.Equal(t, statsTestDirEnd.All, statsTestDirStart.All-statsTestDirStart.RightFiles)
 	assert.Equal(t, statsBackupDirEnd.All, statsBackupDirStart.All+statsTestDirStart.RightFiles)
 
-	files, err := ioutil.ReadDir(backupPath)
-	if err != nil {
-		t.Fatal(err)
-	}
-	for _, f := range files {
-		ext := filepath.Ext(f.Name())
-		if ext == os.Getenv("FILE_EXTENSION") {
-			todayDir := tgpost.GetTodayDir()
-			box, err := ioutil.ReadFile(backupPath + "/" + f.Name())
-			if err != nil {
-				log.Println("Ошибка при попытке прочитать файл:", f.Name(), err)
-			}
-			fp := fmt.Sprintf("%s/%s/%s", testDirPath, todayDir, f.Name())
-			err = ioutil.WriteFile(fp, box, 0777)
-			if err != nil {
-				log.Println("Ошибка при попытке скопировать файл:", f.Name(), err)
-			}
-			err = os.Remove(backupPath + "/" + f.Name())
-			if err != nil {
-				log.Println("Ошибка при попытке удалить файл:", f.Name(), err)
-			}
-		}
-	}
+	teardownBackup()
+
+	status, err = event.VideoReadyHandler("", backupPath)
+	assert.NotNil(t, err)
+	assert.Contains(t, err.Error(), "directory is not exist")
+
+	teardownBackup()
+
+	status, err = event.VideoReadyHandler(testDirPath, "")
+	assert.NotNil(t, err)
+	assert.Contains(t, err.Error(), "permission denied")
+
+	teardownBackup()
+
+	status, err = event.VideoReadyHandler(testDirPath, "wrong")
+	assert.NotNil(t, err)
+	assert.Contains(t, err.Error(), "no such file or directory")
+
+	teardownBackup()
 }
 
 func TestEvent_SaveUpdated(t *testing.T) {
@@ -183,4 +179,30 @@ func teardown(s *store.Store) {
 		log.Println("Ошибка при удалении коллекции", s.Collection.Name, err)
 	}
 	s.Connection.Close()
+}
+
+func teardownBackup() {
+	files, err := ioutil.ReadDir(backupPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, f := range files {
+		ext := filepath.Ext(f.Name())
+		if ext == os.Getenv("FILE_EXTENSION") {
+			todayDir := tgpost.GetTodayDir()
+			box, err := ioutil.ReadFile(backupPath + "/" + f.Name())
+			if err != nil {
+				log.Println("Ошибка при попытке прочитать файл:", f.Name(), err)
+			}
+			fp := fmt.Sprintf("%s/%s/%s", testDirPath, todayDir, f.Name())
+			err = ioutil.WriteFile(fp, box, 0777)
+			if err != nil {
+				log.Println("Ошибка при попытке скопировать файл:", f.Name(), err)
+			}
+			err = os.Remove(backupPath + "/" + f.Name())
+			if err != nil {
+				log.Println("Ошибка при попытке удалить файл:", f.Name(), err)
+			}
+		}
+	}
 }
