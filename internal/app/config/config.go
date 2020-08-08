@@ -27,13 +27,24 @@ type Config struct {
 	SentryUrl             string
 }
 
-func New(p string) *Config {
+func New(p string) (*Config, error) {
 	if err := godotenv.Load(p); err != nil {
-		log.Fatal("Ошибка загрузки env файла.", p)
+		log.Println("Ошибка загрузки env файла.", p)
+
+		return nil, err
 	}
-	mtt := ConvertEnvVarToInt(p, "MAIN_TICKER_TIME")
-	ca := ConvertEnvVarToInt(p, "DB_CONNECT_ATTEMPTS")
-	tba := ConvertEnvVarToInt(p, "DB_TIME_BETWEEN_ATTEMPTS")
+	mtt, err := ConvertEnvVarToInt(p, "MAIN_TICKER_TIME")
+	if err != nil {
+		return nil, err
+	}
+	ca, err := ConvertEnvVarToInt(p, "DB_CONNECT_ATTEMPTS")
+	if err != nil {
+		return nil, err
+	}
+	tba, err := ConvertEnvVarToInt(p, "DB_TIME_BETWEEN_ATTEMPTS")
+	if err != nil {
+		return nil, err
+	}
 
 	return &Config{
 		AppMode:               os.Getenv("APP_MODE"),
@@ -46,14 +57,16 @@ func New(p string) *Config {
 		DbConnectAttempts:     ca,
 		DbTimeBetweenAttempts: tba,
 		SentryUrl:             os.Getenv("SENTRY_URL"),
-	}
+	}, nil
 }
 
-func ConvertEnvVarToInt(p string, s string) int {
+func ConvertEnvVarToInt(p string, s string) (int, error) {
 	res, err := strconv.Atoi(os.Getenv(s))
 	if err != nil {
-		log.Fatalf("Ошибка чтения параметра %s в конфигурационном файле: %s", s, p)
+		log.Printf("Ошибка чтения параметра %s в конфигурационном файле: %s", s, p)
+
+		return 0, err
 	}
 
-	return res
+	return res, nil
 }

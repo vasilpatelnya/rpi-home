@@ -8,7 +8,8 @@ import (
 
 func TestNew(t *testing.T) {
 	path := "./../../../configs/" + config.TestCfgFilename
-	c := config.New(path)
+	c, err := config.New(path)
+	assert.Nil(t, err)
 	t.Run("All right", func(t *testing.T) {
 		s, err := New(c)
 		assert.Nil(t, err)

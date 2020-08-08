@@ -41,7 +41,8 @@ func TestNew(t *testing.T) {
 }
 
 func TestEvent_GetAllByStatus(t *testing.T) {
-	c := config.New(configPath)
+	c, err := config.New(configPath)
+	assert.Nil(t, err)
 	s, err := store.New(c)
 	assert.Nil(t, err)
 	_, err = GetAllByStatus(s.Collection, StatusNew)
@@ -49,7 +50,8 @@ func TestEvent_GetAllByStatus(t *testing.T) {
 }
 
 func TestEvent_Save(t *testing.T) {
-	c := config.New(configPath)
+	c, err := config.New(configPath)
+	assert.Nil(t, err)
 	s, err := store.New(c)
 	assert.Nil(t, err)
 	defer teardown(s)
@@ -129,7 +131,8 @@ func TestEvent_VideoReadyHandler(t *testing.T) {
 }
 
 func TestEvent_SaveUpdated(t *testing.T) {
-	c := config.New(configPath)
+	c, err := config.New(configPath)
+	assert.Nil(t, err)
 	s, err := store.New(c)
 	assert.Nil(t, err)
 	defer teardown(s)

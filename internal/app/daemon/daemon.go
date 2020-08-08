@@ -19,7 +19,10 @@ type Daemon struct {
 }
 
 func New(configPath string) *Daemon {
-	c := config.New(configPath)
+	c, err := config.New(configPath)
+	if err != nil {
+		log.Fatalln("Ошибка при загрузке конфигурационного файла:", configPath, err)
+	}
 	db, err := store.New(c)
 	if err != nil {
 		log.Fatalln("Ошибка при создании подключения к БД.")
