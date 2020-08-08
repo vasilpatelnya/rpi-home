@@ -8,8 +8,11 @@ import (
 )
 
 func Start() {
+	if os.Getenv("SENTRY_URL") == "" {
+		return
+	}
 	err := sentry.Init(sentry.ClientOptions{
-		Dsn: "https://57b796bab50e4584abc4dd1bc02e0afd@o431527.ingest.sentry.io/5382874",
+		Dsn: os.Getenv("SENTRY_URL"),
 	})
 	if err != nil {
 		log.Fatalf("sentry.Init: %s", err)
@@ -21,7 +24,7 @@ func Start() {
 }
 
 func Handle(err error, msg string) {
-	if os.Getenv("APP_MODE") == config.AppProd {
+	if os.Getenv("APP_MODE") == config.AppProd && os.Getenv("SENTRY_URL") != "" {
 		sentry.CaptureException(err)
 	}
 	log.Println(msg)

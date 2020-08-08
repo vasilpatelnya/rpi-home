@@ -24,6 +24,7 @@ type Config struct {
 	FileExtension         string
 	DbConnectAttempts     int
 	DbTimeBetweenAttempts int
+	SentryUrl             string
 }
 
 func New(p string) *Config {
@@ -44,6 +45,7 @@ func New(p string) *Config {
 		FileExtension:         os.Getenv("FILE_EXTENSION"),
 		DbConnectAttempts:     ca,
 		DbTimeBetweenAttempts: tba,
+		SentryUrl:             os.Getenv("SENTRY_URL"),
 	}
 }
 
