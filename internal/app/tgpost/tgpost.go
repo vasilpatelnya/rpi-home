@@ -3,6 +3,7 @@ package tgpost
 import (
 	"errors"
 	"fmt"
+	"github.com/vasilpatelnya/rpi-home/internal/app/config"
 	"io/ioutil"
 	"log"
 	"os"
@@ -34,6 +35,10 @@ func SendText(t string) error {
 	if len(t) == 0 {
 		return errors.New("отсутствует текст сообщения")
 	}
+	if os.Getenv("APP_MODE") == config.AppTest {
+		log.Println("Вы находитесь в тестовом режиме. Отправка файлов игнорируется.")
+		return nil
+	}
 	cmd := fmt.Sprintf(`%s "%s"`, appPath, t)
 	if err := exec.Command("/bin/bash", "-c", cmd).Run(); err != nil {
 		return err
@@ -50,6 +55,10 @@ func SendFile(fp string, m string) error {
 	exist := exists(fp)
 	if !exist {
 		return errors.New("такого файла не существует или указанный путь неверен")
+	}
+	if os.Getenv("APP_MODE") == config.AppTest {
+		log.Println("Вы находитесь в тестовом режиме. Отправка файлов игнорируется.")
+		return nil
 	}
 	caption := ""
 	if len(m) > 0 {

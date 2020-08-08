@@ -10,7 +10,7 @@ build-daemon-run:
 
 .PHONY: test
 test:
-	go test -v ./internal/app/store ./internal/app/rpi-detector-mongo -cover
+	go test -v ./internal/app/store ./internal/app/tgpost ./internal/app/rpi-detector-mongo -cover
 
 .PHONY: install
 install:

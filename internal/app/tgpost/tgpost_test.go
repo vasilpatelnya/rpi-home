@@ -1,10 +1,22 @@
 package tgpost
 
 import (
+	"github.com/vasilpatelnya/rpi-home/internal/app/config"
+	"log"
+	"os"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
+
+func TestMain(m *testing.M) {
+	err := os.Setenv("APP_MODE", config.AppTest)
+	if err != nil {
+		log.Fatal(err)
+	}
+	m.Run()
+}
 
 func TestSendText(t *testing.T) {
 	t.Run("empty text", func(t *testing.T) {
@@ -30,4 +42,21 @@ func TestSendFile(t *testing.T) {
 		err := SendFile("./tgpost_test.go", "тест")
 		assert.Nil(t, err)
 	})
+}
+
+func TestGetTodayDir(t *testing.T) {
+	now := time.Now()
+	assert.Equal(t, GetTodayDir(), now.Format(LayoutISO))
+}
+
+func TestGetTodayPath(t *testing.T) {
+	now := time.Now().Format(LayoutISO)
+	assert.Equal(t, GetTodayPath("test"), "test/"+now)
+}
+
+func TestGetTodayFileList(t *testing.T) {
+	dir := "wrong"
+	_, err := GetTodayFileList(dir)
+	assert.NotNil(t, err)
+	assert.Contains(t, err.Error(), dir+" directory is not exist")
 }
