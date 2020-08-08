@@ -76,7 +76,7 @@ func TestEvent_GetVideoReadyMessage(t *testing.T) {
 		Created: time.Date(2020, 8, 1, 12, 30, 0, 0, time.UTC).UnixNano(),
 		Updated: time.Date(2020, 8, 1, 12, 30, 0, 0, time.UTC).UnixNano(),
 	}
-	assert.True(t, event.GetVideoReadyMessage() == "Видео от 1 августа 2020 15:30")
+	assert.Equal(t, event.GetVideoReadyMessage(), "Видео от 1 августа 2020 15:30")
 }
 
 func TestEvent_VideoReadyHandler(t *testing.T) {
