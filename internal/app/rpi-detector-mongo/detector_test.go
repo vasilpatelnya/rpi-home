@@ -79,19 +79,18 @@ func TestEvent_HandlerMotionReady(t *testing.T) {
 		Created: time.Now().UnixNano(),
 		Updated: time.Now().UnixNano(),
 	}
-	statsTestDirStart, err := getStats(testDirPath)
+	statsTestDirStart, err := getStats(testDirPath + "/" + tgpost.GetTodayDir())
 	assert.Nil(t, err)
 	statsBackupDirStart, err := getStats(backupPath)
 	assert.Nil(t, err)
 	status, err := event.HandlerMotionReady(testDirPath, backupPath)
 	assert.Nil(t, err)
 	assert.Equal(t, status, tgpost.StatusSent)
-	statsTestDirEnd, err := getStats(testDirPath)
+	statsTestDirEnd, err := getStats(testDirPath + "/" + tgpost.GetTodayDir())
 	assert.Nil(t, err)
-	statsBackupDirEnd, err := getStats(testDirPath)
+	statsBackupDirEnd, err := getStats(backupPath)
 	assert.Nil(t, err)
 	assert.Equal(t, statsTestDirEnd.All, statsTestDirStart.All-statsTestDirStart.RightFiles)
-	// todo здесь спотыкается тест - разобраться.
 	assert.Equal(t, statsBackupDirEnd.All, statsBackupDirStart.All+statsTestDirStart.RightFiles)
 
 	files, err := ioutil.ReadDir(backupPath)
@@ -124,19 +123,19 @@ func getStats(path string) (*Stats, error) {
 	if err != nil {
 		return nil, err
 	}
-	stats := &Stats{
+	stats := Stats{
 		All:        len(files),
 		RightFiles: 0,
 		WrongFiles: 0,
 	}
 	for _, f := range files {
 		ext := filepath.Ext(f.Name())
-		if ext == os.Getenv("FILE_EXTENSION") && f.Size() < MaxSize {
+		if ext == os.Getenv("FILE_EXTENSION") && f.Size() < MaxSize && f.Size() > 0 {
 			stats.RightFiles++
 			continue
 		}
 		stats.WrongFiles++
 	}
 
-	return stats, nil
+	return &stats, nil
 }
