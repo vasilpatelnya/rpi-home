@@ -1,4 +1,4 @@
-configs/main.env
+.idea
 ./daemon
 ./detector
 ./coverage.txt
