@@ -66,7 +66,7 @@ func mainHandler(d *daemon.Daemon, s int) {
 				}
 			case rpidetectormongo.TypeMovieReady:
 				log.Println("Видео готово!")
-				e.Status, err = e.HandlerMotionReady(d.Config.MoviesDirCamera1, "./backup")
+				e.Status, err = e.VideoReadyHandler(d.Config.MoviesDirCamera1, "./backup")
 				if err != nil {
 					msg := fmt.Sprintf("Ошибка обработки события: %s %s", e.Name, err.Error())
 					sentryhelper.Handle(err, msg)

@@ -65,7 +65,20 @@ func TestEvent_Save(t *testing.T) {
 	assert.Nil(t, err)
 }
 
-func TestEvent_HandlerMotionReady(t *testing.T) {
+func TestEvent_GetVideoReadyMessage(t *testing.T) {
+	event := &Event{
+		ID:      bson.NewObjectId(),
+		Type:    TypeMovieReady,
+		Status:  StatusNew,
+		Name:    "test",
+		Device:  "test",
+		Created: time.Date(2020, 8, 1, 12, 30, 0, 0, time.UTC).UnixNano(),
+		Updated: time.Date(2020, 8, 1, 12, 30, 0, 0, time.UTC).UnixNano(),
+	}
+	assert.True(t, event.GetVideoReadyMessage() == "Видео от 1 августа 2020 15:30")
+}
+
+func TestEvent_VideoReadyHandler(t *testing.T) {
 	err := os.Setenv("FILE_EXTENSION", ".mp4")
 	assert.Nil(t, err)
 	err = os.Setenv("APP_MODE", config.AppTest)
@@ -83,7 +96,7 @@ func TestEvent_HandlerMotionReady(t *testing.T) {
 	assert.Nil(t, err)
 	statsBackupDirStart, err := getStats(backupPath)
 	assert.Nil(t, err)
-	status, err := event.HandlerMotionReady(testDirPath, backupPath)
+	status, err := event.VideoReadyHandler(testDirPath, backupPath)
 	assert.Nil(t, err)
 	assert.Equal(t, status, tgpost.StatusSent)
 	statsTestDirEnd, err := getStats(testDirPath + "/" + tgpost.GetTodayDir())

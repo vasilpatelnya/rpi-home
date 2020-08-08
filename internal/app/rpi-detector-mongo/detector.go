@@ -10,6 +10,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -22,8 +23,15 @@ const (
 	TypeMotion     int = 1
 	TypeMovieReady int = 2
 
-	MaxSize int64 = 50 * 1024 * 1024
+	MaxSize int64 = 50 * 1024 * 1024 // 50mb
 )
+
+var Months = map[string]string{
+	"January": "января", "February": "февраля", "March": "марта",
+	"April": "апреля", "May": "мая", "June": "июня",
+	"July": "июля", "August": "августа", "September": "сентября",
+	"October": "октября", "November": "ноября", "December": "декабря",
+}
 
 type Event struct {
 	ID      bson.ObjectId `bson:"_id"`
@@ -78,7 +86,17 @@ func (e *Event) GetMotionMessage() string {
 	return text + add
 }
 
-func (e *Event) HandlerMotionReady(dirname string, backupPath string) (int, error) {
+func (e *Event) GetVideoReadyMessage() string {
+	tm := time.Unix(e.Created/1000000000, 0)
+	msg := "Видео от " + tm.Format("2 January 2006 15:04")
+	for en, ru := range Months {
+		msg = strings.Replace(msg, en, ru, -1)
+	}
+
+	return msg
+}
+
+func (e *Event) VideoReadyHandler(dirname string, backupPath string) (int, error) {
 	l, err := tgpost.GetTodayFileList(dirname)
 	if err != nil {
 		log.Println("Ошибка получения списка файлов в директории:", err.Error())
@@ -91,7 +109,8 @@ func (e *Event) HandlerMotionReady(dirname string, backupPath string) (int, erro
 		ext := filepath.Ext(f.Name())
 		if ext == os.Getenv("FILE_EXTENSION") && f.Size() > 0 && f.Size() < MaxSize {
 			if os.Getenv("APP_MODE") != config.AppTest {
-				err := tgpost.SendFile(fp, "Видео от "+time.Unix(e.Created/1000000000, 0).String())
+				msg := e.GetVideoReadyMessage()
+				err := tgpost.SendFile(fp, msg)
 				if err != nil {
 					log.Println("Ошибка при попытке отправить видео", f.Name(), err)
 
