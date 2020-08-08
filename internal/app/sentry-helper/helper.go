@@ -14,7 +14,9 @@ func Start() {
 	if err != nil {
 		log.Fatalf("sentry.Init: %s", err)
 	} else {
-		log.Println("sentry работает")
+		if os.Getenv("APP_MODE") == config.AppProd {
+			log.Println("sentry работает")
+		}
 	}
 }
 

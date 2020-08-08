@@ -46,13 +46,13 @@ func mainHandler(d *daemon.Daemon, s int) {
 			case rpidetectormongo.TypeMotion:
 				status, err := d.MotionHandler(&e)
 				if err != nil {
-					msg := fmt.Sprintf("Ошибка обработки события: %s, %s", e.Name, err.Error())
+					msg := fmt.Sprintf("Ошибка обработки события: %s %s", e.Name, err.Error())
 					sentryhelper.Handle(err, msg)
 					if status == tgpost.StatusNotSent {
 						e.Status = rpidetectormongo.StatusFail
 						err = e.Save(d.Store.Collection)
 						if err != nil {
-							msg := fmt.Sprintf("Ошибка сохранения события: %s, %s", e.Name, err.Error())
+							msg := fmt.Sprintf("Ошибка сохранения события: %s %s", e.Name, err.Error())
 							sentryhelper.Handle(err, msg)
 						}
 						continue
@@ -61,20 +61,20 @@ func mainHandler(d *daemon.Daemon, s int) {
 				e.Status = rpidetectormongo.StatusReady
 				err = e.Save(d.Store.Collection)
 				if err != nil {
-					msg := fmt.Sprintf("Ошибка сохранения события: %s, %s", e.Name, err.Error())
+					msg := fmt.Sprintf("Ошибка сохранения события: %s %s", e.Name, err.Error())
 					sentryhelper.Handle(err, msg)
 				}
 			case rpidetectormongo.TypeMovieReady:
 				log.Println("Видео готово!")
 				e.Status, err = e.HandlerMotionReady(d.Config.MoviesDirCamera1, "./backup")
 				if err != nil {
-					msg := fmt.Sprintf("Ошибка обработки события: %s, %s", e.Name, err.Error())
+					msg := fmt.Sprintf("Ошибка обработки события: %s %s", e.Name, err.Error())
 					sentryhelper.Handle(err, msg)
 				}
 
 				err = e.SaveUpdated(d.Store.Collection, e.Status)
 				if err != nil {
-					msg := fmt.Sprintf("Ошибка сохранения события: %s, %s", e.Name, err.Error())
+					msg := fmt.Sprintf("Ошибка сохранения события: %s %s", e.Name, err.Error())
 					sentryhelper.Handle(err, msg)
 				}
 			}
