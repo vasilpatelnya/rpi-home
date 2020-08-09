@@ -15,11 +15,11 @@ echo -e "${GREEN}finish updating${NORMAL}"
 
 echo -e "${GREEN}Update app${NORMAL}"
 cd /home/pi/go/src/github.com/vasilpatelnya/rpi-home
-git push origin master
+ssh-agent bash -c 'ssh-add /home/pi/.ssh/id_rsa; git push origin master'
 echo -e "${GREEN}Finish updating app${NORMAL}"
 
 # Компилируем бинарник приложения.
 
 echo -e "${GREEN}Compile app${NORMAL}"
 /usr/local/go/bin/go build -o detector -v ./cmd/detector/main.go && /usr/local/go/bin/go build -o daemon -v ./cmd/daemon/main.go
-echo -e "${GREEN}Finish compiling app{NORMAL}"
+echo -e "${GREEN}Finish compiling app${NORMAL}"
