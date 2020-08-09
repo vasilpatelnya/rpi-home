@@ -141,7 +141,8 @@ func (e *Event) VideoReadyHandler(dirname string, backupPath string) (int, error
 					return tgpost.StatusNotSent, err
 				}
 			} else {
-				if os.Getenv("APP_MODE") != config.AppTest {
+				// TODO чтобы постоянно не отсылать сообщение надо где-то зафиксировать отправку сообщения
+				if os.Getenv("APP_MODE") != config.AppTest && os.Getenv("APP_MODE") != config.AppProd {
 					err := tgpost.SendText("Файл слишком велик чтобы его пересылать в Telegram. Вы можете его посмотреть через веб-интерфейс. Имя файла: " + f.Name())
 					sentryhelper.Handle(err, "Не удалось отправить текстовое сообщение о превышении размера видеофайла.")
 				}
