@@ -15,7 +15,7 @@ echo -e "${GREEN}finish updating${NORMAL}"
 
 echo -e "${GREEN}Update app${NORMAL}"
 cd /home/pi/go/src/github.com/vasilpatelnya/rpi-home
-ssh-agent bash -c 'ssh-add /home/pi/.ssh/id_rsa; git push origin master'
+git pull origin master
 echo -e "${GREEN}Finish updating app${NORMAL}"
 
 # Компилируем бинарник приложения.
