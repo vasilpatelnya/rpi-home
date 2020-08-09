@@ -13,12 +13,11 @@
 3. Подключить к модему RPi через LAN-кабель.
 4. `ping raspberrypi.local` покажет ip (лучше чтобы в сети была одна RPi)
 5. Подключаемся по ssh к RPi и меняем пароль пользователя pi.
-6. Устанавливаем git `sudo apt install git`
-7. `git clone https://github.com/vasilpatelnya/rpi-home`
+6. Клонируем репозиторий приложения `git clone https://github.com/vasilpatelnya/rpi-home`
 
 ## Автоматическая установка приложения (пока в тестовом режиме). Если проблемы с данным типом установке попробуйте пошаговую установку.
 
-`make install`
+`cd /home/pi/go/src/github.com/vasilpatelnya/rpi-home && make install`
 
 ## Пошаговая установка.
 
