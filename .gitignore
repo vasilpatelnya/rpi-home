@@ -1,6 +1,8 @@
 .idea
-./daemon
-./detector
+
+daemon
+detector
+rpihome
 
 docker
 
