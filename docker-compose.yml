@@ -1,0 +1,24 @@
+version: "3.7"
+
+services:
+  rpihome:
+    container_name: "rpihome"
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    links:
+      - mongodb
+    restart: always
+    depends_on:
+      - mongodb
+    volumes:
+      - ./config/docker.json:/app/config/docker.json
+
+  mongodb:
+    container_name: "rpihome_mongodb"
+    image: mongo:latest
+    ports:
+      - "27018:27017"
+    volumes:
+      - ./docker/volume/mongodb:/data/db
+      - ./docker/mongodb/.ash_history:/root/.ash_history:ro

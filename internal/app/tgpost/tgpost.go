@@ -13,9 +13,13 @@ import (
 
 const (
 	appPath   = "/usr/local/bin/telegram-send"
+	
+	// LayoutISO ...
 	LayoutISO = "2006-01-02"
 
+	// StatusSent ...
 	StatusSent    = 1
+	// StatusNotSent ...
 	StatusNotSent = -1
 )
 
@@ -85,7 +89,7 @@ func exists(path string) bool {
 	return true
 }
 
-//GetDirList ...
+// GetTodayFileList ...
 func GetTodayFileList(dirname string) ([]os.FileInfo, error) {
 	if exists(dirname) {
 		files, err := ioutil.ReadDir(GetTodayPath(dirname))

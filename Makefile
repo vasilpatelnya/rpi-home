@@ -1,17 +1,18 @@
 .PHONY: build
 build:
-	/usr/local/go/bin/go build -o detector -v ./cmd/detector/main.go && /usr/local/go/bin/go build -o daemon -v ./cmd/daemon/main.go
+	/usr/local/go/bin/go build -o detector -v ./cmd/detector/main.go && /usr/local/go/bin/go build -o daemon -v ./cmd/daemon/main.go && /usr/local/go/bin/go build -o rpihome -v ./cmd/rpihome/rpihome.go 
 
 .DEFAULT_GOAL := build
 
-.PHONY: build-daemon-run
-build-daemon-run:
-	/usr/local/go/bin/go build -o daemon -v ./cmd/daemon/main.go && sudo ./daemon
+.PHONY: build-run
+build-run:
+	/usr/local/go/bin/go build -o rpihome -v ./cmd/rpihome/rpihome.go && ./rpihome -c config/development.json
 
 .PHONY: test
 test:
-	go test -v ./internal/app/store ./internal/app/tgpost ./internal/app/rpi-detector-mongo ./internal/app/config -cover
-
+	go test -p 1  ./... -v -coverprofile=coverage.out;\
+    go tool cover -func=coverage.out
+	
 .PHONY: install
 install:
 	sudo ./install.sh

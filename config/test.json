@@ -1,0 +1,12 @@
+{
+  "databases": {
+    "mongo": {
+      "uri": "mongodb://127.0.0.1:27017/RpiHome?authSource=admin",
+      "db": "RpiHome"
+    }
+  },
+  "logger": {
+    "show_caller": true,
+    "level": "debug"
+  }
+}
