@@ -2,30 +2,26 @@ package sentry_helper
 
 import (
 	"github.com/getsentry/sentry-go"
-	"github.com/vasilpatelnya/rpi-home/internal/app/config"
-	"log"
-	"os"
+	"github.com/sirupsen/logrus"
 )
 
-func Start() {
-	if os.Getenv("SENTRY_URL") == "" {
+func Start(logger *logrus.Logger, url string) {
+	if url == "" {
+		logger.Warning("Не указан URL для Sentry. Сообщения логгера не идут в Sentry.")
+
 		return
 	}
 	err := sentry.Init(sentry.ClientOptions{
-		Dsn: os.Getenv("SENTRY_URL"),
+		Dsn: url,
 	})
 	if err != nil {
-		log.Fatalf("sentry.Init: %s", err)
+		logger.Errorf("sentry.Init: %s", err)
 	} else {
-		if os.Getenv("APP_MODE") == config.AppProd {
-			log.Println("sentry работает")
-		}
+		logger.Info("Служба логгирования в Sentry успешно инициализирована.")
 	}
 }
 
-func Handle(err error, msg string) {
-	if os.Getenv("APP_MODE") == config.AppProd && os.Getenv("SENTRY_URL") != "" {
-		sentry.CaptureException(err)
-	}
-	log.Println(msg)
+func Handle(logger *logrus.Logger, err error, msg string) {
+	sentry.CaptureException(err)
+	logger.Debug(msg)
 }

@@ -1,7 +1,6 @@
 package tgpost
 
 import (
-	"github.com/vasilpatelnya/rpi-home/internal/app/config"
 	"log"
 	"os"
 	"testing"
@@ -11,7 +10,7 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	err := os.Setenv("APP_MODE", config.AppTest)
+	err := os.Setenv("APP_MODE", "test")
 	if err != nil {
 		log.Fatal(err)
 	}

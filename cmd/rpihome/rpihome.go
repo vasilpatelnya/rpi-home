@@ -2,14 +2,11 @@ package main
 
 import (
 	"flag"
-	"fmt"
-	"log"
-	"os"
-	"time"
-
 	"github.com/pkg/errors"
 	"github.com/vasilpatelnya/rpi-home/config"
 	"github.com/vasilpatelnya/rpi-home/container/servicecontainer"
+	"log"
+	"os"
 )
 
 var configPath string
@@ -42,10 +39,5 @@ func run() {
 		log.Println("Error on try create application container:", err.Error())
 		os.Exit(1)
 	}
-	i := 0
-	for {
-		fmt.Printf("App container %+v work: %d sec\n", appContainer, i)
-		i++
-		time.Sleep(1 * time.Second)
-	}
+	appContainer.Run()
 }

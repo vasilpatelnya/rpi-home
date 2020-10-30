@@ -1,6 +1,7 @@
 package container
 
-// Container ...
+// Container контейнер приложения
 type Container interface {
 	InitApp(filename string) error
+	Run()
 }

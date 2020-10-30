@@ -10,20 +10,22 @@ import (
 	"gopkg.in/mgo.v2"
 )
 
-const (
-	EnvironmentDefault     = "default"
-	EnvironmentProduction  = "production"
-	EnvironmentTest        = "test"
-	EnvironmentDevelopment = "development"
-	EnvironmentLocal       = "local"
-)
-
-var AppLevels = []string{EnvironmentDefault, EnvironmentProduction, EnvironmentTest, EnvironmentDevelopment, EnvironmentLocal}
-
 // Config ...
 type Config struct {
-	Databases DbSettingsStruct `json:"databases"`
-	Logger    Logger           `json:"logger"`
+	Motion         MotionSettings   `json:"motion"`
+	Periods        Periods          `json:"periods"`
+	Databases      DbSettingsStruct `json:"databases"`
+	Logger         Logger           `json:"logger"`
+	SentrySettings SentrySettings   `json:"sentry_settings"`
+}
+
+type MotionSettings struct {
+	MoviesDirCam1 string `json:"movies_dir_cam_1"`
+	FileExtension string `json:"file_extension"`
+}
+
+type Periods struct {
+	MainTickerTime time.Duration `json:"main_ticker_time"`
 }
 
 // DbSettingsStruct ...
@@ -33,8 +35,10 @@ type DbSettingsStruct struct {
 
 // MongoConnectionSettings ...
 type MongoConnectionSettings struct {
-	URI string `json:"uri"`
-	DB  string `json:"db"`
+	URI                 string        `json:"uri"`
+	DB                  string        `json:"db"`
+	ConnectAttempts     int           `json:"connect_attempts"`
+	TimeBetweenAttempts time.Duration `json:"time_between_attempts"`
 }
 
 // MongoConnection ...
@@ -51,6 +55,10 @@ type ConnectionContainer struct {
 type Logger struct {
 	LogLevel   string `json:"level"`
 	ShowCaller bool   `json:"show_caller"`
+}
+
+type SentrySettings struct {
+	SentryUrl string `json:"sentry_url"`
 }
 
 // New ...
@@ -116,26 +124,26 @@ func CreateMongoConnection(settings MongoConnectionSettings) (*MongoConnection, 
 	session.SetSafe(&mgo.Safe{})
 	session.SetSyncTimeout(time.Second * 10)
 
-	go mongoPing(session.DB(settings.DB))
+	go mongoPing(session.DB(settings.DB), settings)
 
 	return &MongoConnection{session, settings}, nil
 }
 
 // AssertCreateMongoConnection ...
 func AssertCreateMongoConnection(settings MongoConnectionSettings) *MongoConnection {
-	log.Println("Connecting to mongo..")
+	log.Println("Устанавливаем соединение с Mongo DB...")
 
 	connection, err := CreateMongoConnection(settings)
 
 	if err != nil {
-		log.Println("Mongo connection error:", err)
+		log.Println("Ошибка при создании подключения к БД.", err)
 		os.Exit(1)
 	}
 
 	return connection
 }
 
-func mongoPing(mg *mgo.Database) {
+func mongoPing(mg *mgo.Database, settings MongoConnectionSettings) {
 	errNum := 0
 
 	for {
@@ -146,11 +154,11 @@ func mongoPing(mg *mgo.Database) {
 			errNum++
 		}
 
-		if errNum > 5 {
-			log.Println("To match error on mongo refresh connect. Shutdown")
+		if errNum > settings.ConnectAttempts {
+			log.Println("Превышено количество попыток подключения к Mongo DB. Завершение работы.")
 			os.Exit(10)
 		}
 
-		time.Sleep(time.Second * 5)
+		time.Sleep(time.Second * settings.TimeBetweenAttempts)
 	}
 }

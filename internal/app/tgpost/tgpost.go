@@ -3,7 +3,6 @@ package tgpost
 import (
 	"errors"
 	"fmt"
-	"github.com/vasilpatelnya/rpi-home/internal/app/config"
 	"io/ioutil"
 	"log"
 	"os"
@@ -12,13 +11,13 @@ import (
 )
 
 const (
-	appPath   = "/usr/local/bin/telegram-send"
-	
+	appPath = "/usr/local/bin/telegram-send"
+
 	// LayoutISO ...
 	LayoutISO = "2006-01-02"
 
 	// StatusSent ...
-	StatusSent    = 1
+	StatusSent = 1
 	// StatusNotSent ...
 	StatusNotSent = -1
 )
@@ -39,7 +38,7 @@ func SendText(t string) error {
 	if len(t) == 0 {
 		return errors.New("отсутствует текст сообщения")
 	}
-	if os.Getenv("APP_MODE") == config.AppTest {
+	if os.Getenv("APP_MODE") == "test" {
 		log.Println("Вы находитесь в тестовом режиме. Отправка файлов игнорируется.")
 		return nil
 	}
@@ -60,7 +59,7 @@ func SendFile(fp string, m string) error {
 	if !exist {
 		return errors.New("такого файла не существует или указанный путь неверен")
 	}
-	if os.Getenv("APP_MODE") == config.AppTest {
+	if os.Getenv("APP_MODE") == "test" {
 		log.Println("Вы находитесь в тестовом режиме. Отправка файлов игнорируется.")
 		return nil
 	}
