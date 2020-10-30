@@ -27,7 +27,7 @@ func (data *EventDataMongo) GetAllByStatus(s int) ([]model.Event, error) {
 func (data *EventDataMongo) Save(e *model.Event) error {
 	_, err := data.EventsCollection.Upsert(bson.M{"_id": e.ID}, e)
 	if err != nil {
-		data.Logger.Error("ошибка сохранения неотправленного события: %s", err.Error())
+		data.Logger.Errorf("ошибка сохранения неотправленного события: %s", err.Error())
 
 		return err
 	}
