@@ -1,6 +1,6 @@
 module github.com/vasilpatelnya/rpi-home
 
-go 1.13
+go 1.15
 
 require (
 	github.com/getsentry/sentry-go v0.7.0

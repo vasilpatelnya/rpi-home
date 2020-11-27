@@ -1,13 +1,14 @@
 package servicecontainer
 
 import (
+	"time"
+
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/vasilpatelnya/rpi-home/config"
+	sentryhelper "github.com/vasilpatelnya/rpi-home/container/sentry-helper"
 	"github.com/vasilpatelnya/rpi-home/dataservice/event_data/mongodb"
-	sentryhelper "github.com/vasilpatelnya/rpi-home/internal/app/sentry-helper"
 	"github.com/vasilpatelnya/rpi-home/usecase"
-	"time"
 )
 
 // ServiceContainer ...
