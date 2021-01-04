@@ -2,19 +2,18 @@ package usecase
 
 import (
 	"fmt"
-	"github.com/vasilpatelnya/rpi-home/container/notification"
-	"github.com/vasilpatelnya/rpi-home/container/notification/telegram"
-	"github.com/vasilpatelnya/rpi-home/container/servicecontainer"
-	"github.com/vasilpatelnya/rpi-home/tool/fs"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 
 	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
+	"github.com/vasilpatelnya/rpi-home/container/notification"
+	"github.com/vasilpatelnya/rpi-home/container/notification/telegram"
 	sentryhelper "github.com/vasilpatelnya/rpi-home/container/sentry-helper"
+	"github.com/vasilpatelnya/rpi-home/container/servicecontainer"
 	"github.com/vasilpatelnya/rpi-home/dataservice"
 	"github.com/vasilpatelnya/rpi-home/model"
+	"github.com/vasilpatelnya/rpi-home/tool/fs"
 )
 
 const (
@@ -69,7 +68,7 @@ func handleEvents(sc *servicecontainer.ServiceContainer, repo dataservice.EventD
 				}
 			case model.TypeMovieReady:
 				sc.Logger.Info("Видео готово!")
-				e.Status, err = handleMotionReady(sc.Notifier, &e, sc.Logger, moviesPath, backupPath)
+				e.Status, err = handleMotionReady(sc, &e, moviesPath, backupPath)
 				if err != nil {
 					msg := fmt.Sprintf("Ошибка обработки события: %s %s", e.Name, err.Error())
 					sentryhelper.Handle(sc.Logger, err, msg)
@@ -98,10 +97,10 @@ func handleMotionAlarm(notifier notification.Notifier, repo dataservice.EventDat
 	return StatusUpdated, nil
 }
 
-func handleMotionReady(notifier notification.Notifier, e *model.Event, logger *logrus.Logger, dirname string, backupPath string) (int, error) {
+func handleMotionReady(sc *servicecontainer.ServiceContainer, e *model.Event, dirname string, backupPath string) (int, error) {
 	l, err := fs.GetTodayFileList(dirname, telegram.LayoutISO)
 	if err != nil {
-		logger.Error("Ошибка получения списка файлов в директории:", err.Error())
+		sc.Logger.Error("Ошибка получения списка файлов в директории:", err.Error())
 
 		return telegram.StatusNotSent, err
 	}
@@ -113,39 +112,39 @@ func handleMotionReady(notifier notification.Notifier, e *model.Event, logger *l
 			if f.Size() < MaxSize {
 				if os.Getenv("APP_MODE") != "test" {
 					msg := e.GetVideoReadyMessage()
-					err := notifier.SendFile(fp, msg)
+					err := sc.Notifier.SendFile(fp, msg)
 					if err != nil {
-						logger.Error("Ошибка при попытке отправить видео", f.Name(), err)
+						sc.Logger.Error("Ошибка при попытке отправить видео", f.Name(), err)
 
 						return telegram.StatusNotSent, err
 					}
 				} else {
-					logger.Info("Вы находитесь в тестовом режиме. Отправка файлов игнорируется.")
+					sc.Logger.Info("Вы находитесь в тестовом режиме. Отправка файлов игнорируется.")
 				}
-				logger.Infof("файл %s был отправлен в телеграм", fp)
+				sc.Logger.Infof("файл %s был отправлен в телеграм", fp)
 				box, err := ioutil.ReadFile(fp)
 				if err != nil {
-					logger.Error("Ошибка при попытке прочитать файл:", f.Name(), err)
+					sc.Logger.Error("Ошибка при попытке прочитать файл:", f.Name(), err)
 
 					return telegram.StatusNotSent, err
 				}
 				err = ioutil.WriteFile(backupPath+"/"+f.Name(), box, 0777)
 				if err != nil {
-					logger.Error("Ошибка при попытке скопировать файл:", f.Name(), err)
+					sc.Logger.Error("Ошибка при попытке скопировать файл:", f.Name(), err)
 
 					return telegram.StatusNotSent, err
 				}
 				err = os.Remove(fp)
 				if err != nil {
-					logger.Error("Ошибка при попытке удалить файл:", f.Name(), err)
+					sc.Logger.Error("Ошибка при попытке удалить файл:", f.Name(), err)
 
 					return telegram.StatusNotSent, err
 				}
 			} else {
 				// TODO чтобы постоянно не отсылать сообщение надо где-то зафиксировать отправку сообщения
 				if os.Getenv("APP_MODE") != "test" && os.Getenv("APP_MODE") != "prod" {
-					err := notifier.SendText("Файл слишком велик чтобы его пересылать в Telegram. Вы можете его посмотреть через веб-интерфейс. Имя файла: " + f.Name())
-					sentryhelper.Handle(logger, err, "Не удалось отправить текстовое сообщение о превышении размера видеофайла.")
+					err := sc.Notifier.SendText("Файл слишком велик чтобы его пересылать в Telegram. Вы можете его посмотреть через веб-интерфейс. Имя файла: " + f.Name())
+					sentryhelper.Handle(sc.Logger, err, "Не удалось отправить текстовое сообщение о превышении размера видеофайла.")
 				}
 			}
 		}
