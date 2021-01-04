@@ -21,5 +21,5 @@ echo -e "${GREEN}Finish updating app${NORMAL}"
 # Компилируем бинарник приложения.
 
 echo -e "${GREEN}Compile app${NORMAL}"
-/usr/local/go/bin/go build -o detector -v ./cmd/detector/main.go && /usr/local/go/bin/go build -o daemon -v ./cmd/daemon/main.go
+/usr/local/go/bin/go build -o detector -v ./cmd/detector/main.go && /usr/local/go/bin/go build -o rpihome -v ./cmd/rpihome/main.go
 echo -e "${GREEN}Finish compiling app${NORMAL}"

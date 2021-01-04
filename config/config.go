@@ -17,6 +17,7 @@ type Config struct {
 	Databases      DbSettingsStruct `json:"databases"`
 	Logger         Logger           `json:"logger"`
 	SentrySettings SentrySettings   `json:"sentry_settings"`
+	Notifier       Notifier         `json:"notifier"`
 }
 
 type MotionSettings struct {
@@ -59,6 +60,10 @@ type Logger struct {
 
 type SentrySettings struct {
 	SentryUrl string `json:"sentry_url"`
+}
+
+type Notifier struct {
+	Type string `json:"type"`
 }
 
 // New ...

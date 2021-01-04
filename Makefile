@@ -1,6 +1,6 @@
 .PHONY: build
 build:
-	/usr/local/go/bin/go build -o detector -v ./cmd/detector/main.go && /usr/local/go/bin/go build -o daemon -v ./cmd/daemon/main.go && /usr/local/go/bin/go build -o rpihome -v ./cmd/rpihome/rpihome.go 
+	/usr/local/go/bin/go build -o detector -v ./cmd/detector/main.go && /usr/local/go/bin/go build -o rpihome -v ./cmd/rpihome/rpihome.go
 
 .DEFAULT_GOAL := build
 

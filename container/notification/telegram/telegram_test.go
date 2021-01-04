@@ -1,12 +1,10 @@
-package tgpost
+package telegram
 
 import (
+	"github.com/stretchr/testify/assert"
 	"log"
 	"os"
 	"testing"
-	"time"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestMain(m *testing.M) {
@@ -18,44 +16,29 @@ func TestMain(m *testing.M) {
 }
 
 func TestSendText(t *testing.T) {
+	tg := TGNotifier{}
 	t.Run("empty text", func(t *testing.T) {
-		err := SendText("")
+		err := tg.SendText("")
 		assert.Error(t, err, "отсутствует текст сообщения")
 	})
 	t.Run("simple text", func(t *testing.T) {
-		err := SendText("simple text")
+		err := tg.SendText("simple text")
 		assert.Nil(t, err)
 	})
 }
 
 func TestSendFile(t *testing.T) {
+	tg := TGNotifier{}
 	t.Run("not existed path", func(t *testing.T) {
-		err := SendFile("./notExist.txt", "")
+		err := tg.SendFile("./notExist.txt", "")
 		assert.Error(t, err, "такого файла не существует или указанный путь неверен")
 	})
 	t.Run("empty path", func(t *testing.T) {
-		err := SendFile("", "")
+		err := tg.SendFile("", "")
 		assert.Error(t, err, "не указан путь к файлу")
 	})
 	t.Run("all right", func(t *testing.T) {
-		err := SendFile("./tgpost_test.go", "тест")
+		err := tg.SendFile("./telegram_test.go", "тест")
 		assert.Nil(t, err)
 	})
-}
-
-func TestGetTodayDir(t *testing.T) {
-	now := time.Now()
-	assert.Equal(t, GetTodayDir(), now.Format(LayoutISO))
-}
-
-func TestGetTodayPath(t *testing.T) {
-	now := time.Now().Format(LayoutISO)
-	assert.Equal(t, GetTodayPath("test"), "test/"+now)
-}
-
-func TestGetTodayFileList(t *testing.T) {
-	dir := "wrong"
-	_, err := GetTodayFileList(dir)
-	assert.NotNil(t, err)
-	assert.Contains(t, err.Error(), dir+" directory is not exist")
 }

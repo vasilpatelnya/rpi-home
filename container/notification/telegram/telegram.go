@@ -1,13 +1,13 @@
-package tgpost
+package telegram
 
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"github.com/vasilpatelnya/rpi-home/container/notification"
+	"github.com/vasilpatelnya/rpi-home/tool/fs"
 	"log"
 	"os"
 	"os/exec"
-	"time"
 )
 
 const (
@@ -25,16 +25,15 @@ const (
 // DirName - директория для мониторинга новых файлов.
 type DirName string
 
-// TgPost главная структура приложения.
-type TgPost struct {
-	Message       string
-	Filepath      string
-	DirName       string
-	FileExtension string
+// TGNotifier главная структура приложения.
+type TGNotifier struct{}
+
+func New() notification.Notifier {
+	return new(TGNotifier)
 }
 
 //SendText ...
-func SendText(t string) error {
+func (tg *TGNotifier) SendText(t string) error {
 	if len(t) == 0 {
 		return errors.New("отсутствует текст сообщения")
 	}
@@ -51,11 +50,11 @@ func SendText(t string) error {
 }
 
 //SendFile ...
-func SendFile(fp string, m string) error {
+func (tg *TGNotifier) SendFile(fp string, m string) error {
 	if len(fp) == 0 {
 		return errors.New("не указан путь к файлу")
 	}
-	exist := exists(fp)
+	exist := fs.Exists(fp)
 	if !exist {
 		return errors.New("такого файла не существует или указанный путь неверен")
 	}
@@ -74,42 +73,4 @@ func SendFile(fp string, m string) error {
 	}
 
 	return nil
-}
-
-func exists(path string) bool {
-	_, err := os.Stat(path)
-	if err == nil {
-		return true
-	}
-	if os.IsNotExist(err) {
-		return false
-	}
-
-	return true
-}
-
-// GetTodayFileList ...
-func GetTodayFileList(dirname string) ([]os.FileInfo, error) {
-	if exists(dirname) {
-		files, err := ioutil.ReadDir(GetTodayPath(dirname))
-		if err != nil {
-			return nil, err
-		}
-
-		return files, nil
-	}
-
-	return nil, errors.New(dirname + " directory is not exist")
-}
-
-// GetTodayDir ...
-func GetTodayDir() string {
-	t := time.Now()
-
-	return t.Format(LayoutISO)
-}
-
-// GetTodayPath ...
-func GetTodayPath(dirname string) string {
-	return fmt.Sprintf("%s/%s", dirname, GetTodayDir())
 }

@@ -3,6 +3,9 @@
         "movies_dir_camera1": "/var/lib/motioneye/Camera1",
         "file_extension": ".mp4"
     },
+    "notifier": {
+        "type": "telegram"
+    },
     "periods": {
         "main_ticker_time": 1000
     },

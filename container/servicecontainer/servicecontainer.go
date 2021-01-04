@@ -1,6 +1,8 @@
 package servicecontainer
 
 import (
+	"github.com/vasilpatelnya/rpi-home/container/notification"
+	"github.com/vasilpatelnya/rpi-home/container/notification/telegram"
 	"time"
 
 	"github.com/pkg/errors"
@@ -16,6 +18,7 @@ type ServiceContainer struct {
 	AppConfig *config.Config
 	DB        *config.ConnectionContainer
 	Logger    *logrus.Logger
+	Notifier  notification.Notifier
 }
 
 // InitApp initializes container config in the specified path.
@@ -29,6 +32,10 @@ func (sc *ServiceContainer) InitApp(filename string) error {
 	err = sc.InitLogger()
 	if err != nil {
 		return errors.Wrap(err, "Ошибка при инициализации логгера")
+	}
+	err = sc.InitNotifier()
+	if err != nil {
+		return errors.Wrap(err, "Ошибка при инициализации модуля отправки уведомлений")
 	}
 
 	return nil
@@ -54,6 +61,16 @@ func (sc *ServiceContainer) InitLogger() error {
 	return err
 }
 
+// InitNotifier ...
+func (sc *ServiceContainer) InitNotifier() error {
+	switch sc.AppConfig.Notifier.Type {
+	case "telegram":
+		sc.Notifier = telegram.New()
+	}
+
+	return nil
+}
+
 // Run ...
 func (sc *ServiceContainer) Run() {
 	timeFormat := "2 January 2006 15:04" // todo to cfg
@@ -71,7 +88,7 @@ func (sc *ServiceContainer) Run() {
 				EventsCollection: sc.DB.Mongo.C("events"), // todo to cfg
 				Logger:           sc.Logger,
 			}
-			usecase.EventHandle(sc.Logger, repo, sc.AppConfig.Motion.MoviesDirCam1)
+			usecase.EventHandle(sc, repo, sc.AppConfig.Motion.MoviesDirCam1)
 
 			sc.Logger.Infof("Итерация главного цикла закончилась. Время: %s", t.Format(timeFormat))
 		}
