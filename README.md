@@ -6,7 +6,7 @@
  * демон, который отслеживает и обрабатывает записи о событиях в БД
  * cli-приложение, которое пишет события переданные в аргументах в БД
 
-![Схема приложения]("https://github.com/vasilpatelnya/rpi-home/structure.svg")
+![Схема приложения]("https://github.com/vasilpatelnya/rpi-home/blob/master/structure.svg")
 
 ## Подготовка RPi.
 
