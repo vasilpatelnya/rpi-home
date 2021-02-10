@@ -16,3 +16,6 @@ test:
 .PHONY: install
 install:
 	sudo ./install.sh
+
+gui:
+	/usr/local/go/bin/go build -o gui ./cmd/gui && ./gui

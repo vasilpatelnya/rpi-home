@@ -3,6 +3,7 @@
 daemon
 detector
 rpihome
+gui
 
 docker
 

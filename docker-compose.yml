@@ -22,3 +22,22 @@ services:
     volumes:
       - ./docker/volume/mongodb:/data/db
       - ./docker/mongodb/.ash_history:/root/.ash_history:ro
+    
+  motioneye:
+    container_name: "rpihome_motioneye"
+    image: "ccrisan/motioneye:master-armhf"
+    ports: 
+      - "8765:8765"
+    hostname: "motioneye"
+    restart: "always"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/motioneye:/etc/motioneye
+      - /var/lib/motioneye:/var/lib/motioneye
+    devices: 
+      - /dev/video0
+
+  telegram-send:
+    container_name: "telegram-send"
+    dockerfile: ./TelegramSend.Dockerfile
+    restart: "always"
