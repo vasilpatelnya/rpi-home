@@ -36,8 +36,3 @@ services:
       - /var/lib/motioneye:/var/lib/motioneye
     devices: 
       - /dev/video0
-
-  telegram-send:
-    container_name: "telegram-send"
-    dockerfile: ./TelegramSend.Dockerfile
-    restart: "always"

@@ -10,7 +10,6 @@ import (
 	"github.com/vasilpatelnya/rpi-home/config"
 	sentryhelper "github.com/vasilpatelnya/rpi-home/container/sentry-helper"
 	"github.com/vasilpatelnya/rpi-home/dataservice/event_data/mongodb"
-	"github.com/vasilpatelnya/rpi-home/usecase"
 )
 
 // ServiceContainer ...

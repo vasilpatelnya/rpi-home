@@ -8,7 +8,6 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/vasilpatelnya/rpi-home/container/notification"
-	"github.com/vasilpatelnya/rpi-home/container/notification/telegram"
 	sentryhelper "github.com/vasilpatelnya/rpi-home/container/sentry-helper"
 	"github.com/vasilpatelnya/rpi-home/container/servicecontainer"
 	"github.com/vasilpatelnya/rpi-home/dataservice"
@@ -50,7 +49,7 @@ func handleEvents(sc *servicecontainer.ServiceContainer, repo dataservice.EventD
 				if err != nil {
 					msg := fmt.Sprintf("Ошибка обработки события: %s %s", e.Name, err.Error())
 					sentryhelper.Handle(sc.Logger, err, msg)
-					if status == telegram.StatusNotSent {
+					if status == model.StatusNotSent {
 						e.Status = model.StatusFail
 						err = repo.Save(&e)
 						if err != nil {
@@ -87,7 +86,7 @@ func handleEvents(sc *servicecontainer.ServiceContainer, repo dataservice.EventD
 func handleMotionAlarm(notifier notification.Notifier, repo dataservice.EventData, e *model.Event) (int, error) {
 	err := notifier.SendText(e.GetMotionMessage())
 	if err != nil {
-		return telegram.StatusNotSent, errors.New("ошибка отправки текста о срабатывании")
+		return model.StatusNotSent, errors.New("ошибка отправки текста о срабатывании")
 	}
 	err = repo.Save(e)
 	if err != nil {
@@ -98,14 +97,14 @@ func handleMotionAlarm(notifier notification.Notifier, repo dataservice.EventDat
 }
 
 func handleMotionReady(sc *servicecontainer.ServiceContainer, e *model.Event, dirname string, backupPath string) (int, error) {
-	l, err := fs.GetTodayFileList(dirname, telegram.LayoutISO)
+	l, err := fs.GetTodayFileList(dirname, model.LayoutISO)
 	if err != nil {
 		sc.Logger.Error("Ошибка получения списка файлов в директории:", err.Error())
 
-		return telegram.StatusNotSent, err
+		return model.StatusNotSent, err
 	}
 	for _, f := range l {
-		todayDir := fs.GetTodayDir(telegram.LayoutISO)
+		todayDir := fs.GetTodayDir(model.LayoutISO)
 		fp := fmt.Sprintf("%s/%s/%s", dirname, todayDir, f.Name())
 		ext := filepath.Ext(f.Name())
 		if ext == ".mp4" && f.Size() > 0 { // todo to cfg
@@ -116,7 +115,7 @@ func handleMotionReady(sc *servicecontainer.ServiceContainer, e *model.Event, di
 					if err != nil {
 						sc.Logger.Error("Ошибка при попытке отправить видео", f.Name(), err)
 
-						return telegram.StatusNotSent, err
+						return model.StatusNotSent, err
 					}
 				} else {
 					sc.Logger.Info("Вы находитесь в тестовом режиме. Отправка файлов игнорируется.")
@@ -126,19 +125,19 @@ func handleMotionReady(sc *servicecontainer.ServiceContainer, e *model.Event, di
 				if err != nil {
 					sc.Logger.Error("Ошибка при попытке прочитать файл:", f.Name(), err)
 
-					return telegram.StatusNotSent, err
+					return model.StatusNotSent, err
 				}
 				err = ioutil.WriteFile(backupPath+"/"+f.Name(), box, 0777)
 				if err != nil {
 					sc.Logger.Error("Ошибка при попытке скопировать файл:", f.Name(), err)
 
-					return telegram.StatusNotSent, err
+					return model.StatusNotSent, err
 				}
 				err = os.Remove(fp)
 				if err != nil {
 					sc.Logger.Error("Ошибка при попытке удалить файл:", f.Name(), err)
 
-					return telegram.StatusNotSent, err
+					return model.StatusNotSent, err
 				}
 			} else {
 				// TODO чтобы постоянно не отсылать сообщение надо где-то зафиксировать отправку сообщения
@@ -150,5 +149,5 @@ func handleMotionReady(sc *servicecontainer.ServiceContainer, e *model.Event, di
 		}
 	}
 
-	return telegram.StatusSent, nil
+	return model.StatusSent, nil
 }

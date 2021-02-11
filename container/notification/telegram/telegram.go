@@ -3,11 +3,14 @@ package telegram
 import (
 	"errors"
 	"fmt"
-	"github.com/vasilpatelnya/rpi-home/container/notification"
-	"github.com/vasilpatelnya/rpi-home/tool/fs"
 	"log"
 	"os"
 	"os/exec"
+
+	"github.com/vasilpatelnya/rpi-home/container/notification"
+	"github.com/vasilpatelnya/rpi-home/tool/fs"
+	"github.com/zhulik/margelet"
+	tgbotapi "gopkg.in/telegram-bot-api.v4"
 )
 
 const (
@@ -26,14 +29,29 @@ const (
 type DirName string
 
 // TGNotifier главная структура приложения.
-type TGNotifier struct{}
+type TGNotifier struct {
+	Bot *margelet.Margelet
+}
 
+// New ...
 func New() notification.Notifier {
-	return new(TGNotifier)
+	bot, err := margelet.NewMargelet("<your awesome bot name>", "<redis addr>", "<redis password>", 0, "your bot token", false)
+
+	if err != nil {
+		panic(err)
+	}
+
+	err = bot.Run()
+	if err != nil {
+		panic(err)
+	}
+
+	return &TGNotifier{Bot: bot}
 }
 
 //SendText ...
 func (tg *TGNotifier) SendText(t string) error {
+	sendCat(123456, tg.Bot)
 	if len(t) == 0 {
 		return errors.New("отсутствует текст сообщения")
 	}
@@ -73,4 +91,15 @@ func (tg *TGNotifier) SendFile(fp string, m string) error {
 	}
 
 	return nil
+}
+
+func sendCat(chatID int64, bot *margelet.Margelet) {
+	if bot.ChatConfigRepository.Get(chatID) == "yes" {
+		bytes := []byte("rpi home")
+
+		msg := tgbotapi.NewPhotoUpload(chatID, tgbotapi.FileBytes{"cat.jpg", bytes})
+		msg.ChatID = chatID
+
+		bot.Send(msg)
+	}
 }
