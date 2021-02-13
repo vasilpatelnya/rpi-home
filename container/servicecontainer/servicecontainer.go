@@ -87,7 +87,7 @@ func (sc *ServiceContainer) Run() {
 				EventsCollection: sc.DB.Mongo.C("events"), // todo to cfg
 				Logger:           sc.Logger,
 			}
-			usecase.EventHandle(sc, repo, sc.AppConfig.Motion.MoviesDirCam1)
+			sc.EventHandle(repo, sc.AppConfig.Motion.MoviesDirCam1)
 
 			sc.Logger.Infof("Итерация главного цикла закончилась. Время: %s", t.Format(timeFormat))
 		}

@@ -1,4 +1,4 @@
-package usecase
+package servicecontainer
 
 import (
 	"fmt"
@@ -9,7 +9,6 @@ import (
 	"github.com/pkg/errors"
 	"github.com/vasilpatelnya/rpi-home/container/notification"
 	sentryhelper "github.com/vasilpatelnya/rpi-home/container/sentry-helper"
-	"github.com/vasilpatelnya/rpi-home/container/servicecontainer"
 	"github.com/vasilpatelnya/rpi-home/dataservice"
 	"github.com/vasilpatelnya/rpi-home/model"
 	"github.com/vasilpatelnya/rpi-home/tool/fs"
@@ -22,20 +21,20 @@ const (
 )
 
 // todo переделать на аргумент с несколькими путями к записям: например для нескольких камер
-func EventHandle(sc *servicecontainer.ServiceContainer, repo dataservice.EventData, moviesPath string) {
-	handleNew(sc, repo, moviesPath)
-	handleFail(sc, repo, moviesPath)
+func (sc *ServiceContainer) EventHandle(repo dataservice.EventData, moviesPath string) {
+	sc.handleNew(repo, moviesPath)
+	sc.handleFail(repo, moviesPath)
 }
 
-func handleNew(sc *servicecontainer.ServiceContainer, repo dataservice.EventData, moviesPath string) {
-	handleEvents(sc, repo, model.StatusNew, moviesPath, "./backup") // todo to cfg
+func (sc *ServiceContainer) handleNew(repo dataservice.EventData, moviesPath string) {
+	sc.handleEvents(repo, model.StatusNew, moviesPath, "./backup") // todo to cfg
 }
 
-func handleFail(sc *servicecontainer.ServiceContainer, repo dataservice.EventData, moviesPath string) {
-	handleEvents(sc, repo, model.StatusFail, moviesPath, "./backup") // todo to cfg
+func (sc *ServiceContainer) handleFail(repo dataservice.EventData, moviesPath string) {
+	sc.handleEvents(repo, model.StatusFail, moviesPath, "./backup") // todo to cfg
 }
 
-func handleEvents(sc *servicecontainer.ServiceContainer, repo dataservice.EventData, status int, moviesPath, backupPath string) {
+func (sc *ServiceContainer) handleEvents(repo dataservice.EventData, status int, moviesPath, backupPath string) {
 	events, err := repo.GetAllByStatus(status)
 	if err != nil {
 		sentryhelper.Handle(sc.Logger, err, "Ошибка получения записей событий из БД")
@@ -67,7 +66,7 @@ func handleEvents(sc *servicecontainer.ServiceContainer, repo dataservice.EventD
 				}
 			case model.TypeMovieReady:
 				sc.Logger.Info("Видео готово!")
-				e.Status, err = handleMotionReady(sc, &e, moviesPath, backupPath)
+				e.Status, err = sc.handleMotionReady(&e, moviesPath, backupPath)
 				if err != nil {
 					msg := fmt.Sprintf("Ошибка обработки события: %s %s", e.Name, err.Error())
 					sentryhelper.Handle(sc.Logger, err, msg)
@@ -96,7 +95,7 @@ func handleMotionAlarm(notifier notification.Notifier, repo dataservice.EventDat
 	return StatusUpdated, nil
 }
 
-func handleMotionReady(sc *servicecontainer.ServiceContainer, e *model.Event, dirname string, backupPath string) (int, error) {
+func (sc *ServiceContainer) handleMotionReady(e *model.Event, dirname string, backupPath string) (int, error) {
 	l, err := fs.GetTodayFileList(dirname, model.LayoutISO)
 	if err != nil {
 		sc.Logger.Error("Ошибка получения списка файлов в директории:", err.Error())
