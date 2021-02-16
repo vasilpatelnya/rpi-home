@@ -4,7 +4,11 @@
     "file_extension": ".mp4"
   },
   "notifier": {
-    "type": "telegram"
+    "type": "telegram",
+    "options": {
+      "chat_id": "",
+      "token": ""
+    }
   },
   "periods": {
     "main_ticker_time": 1000

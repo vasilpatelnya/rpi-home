@@ -7,10 +7,9 @@ import (
 	"os"
 	"os/exec"
 
+	"github.com/onrik/micha"
 	"github.com/vasilpatelnya/rpi-home/container/notification"
 	"github.com/vasilpatelnya/rpi-home/tool/fs"
-	"github.com/zhulik/margelet"
-	tgbotapi "gopkg.in/telegram-bot-api.v4"
 )
 
 const (
@@ -30,41 +29,34 @@ type DirName string
 
 // TGNotifier главная структура приложения.
 type TGNotifier struct {
-	Bot *margelet.Margelet
+	michaAPI *micha.Bot
+	chatID   micha.ChatID
 }
 
 // New ...
-func New() notification.Notifier {
-	bot, err := margelet.NewMargelet("<your awesome bot name>", "<redis addr>", "<redis password>", 0, "your bot token", false)
-
+func New(token, chatID string) notification.Notifier {
+	bot, err := micha.NewBot(token)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
-	err = bot.Run()
-	if err != nil {
-		panic(err)
-	}
+	go bot.Start()
 
-	return &TGNotifier{Bot: bot}
+	return &TGNotifier{
+		michaAPI: bot,
+		chatID:   micha.ChatID(chatID),
+	}
 }
 
 //SendText ...
 func (tg *TGNotifier) SendText(t string) error {
-	sendCat(123456, tg.Bot)
 	if len(t) == 0 {
 		return errors.New("отсутствует текст сообщения")
 	}
-	if os.Getenv("APP_MODE") == "test" {
-		log.Println("Вы находитесь в тестовом режиме. Отправка файлов игнорируется.")
-		return nil
-	}
-	cmd := fmt.Sprintf(`%s "%s"`, appPath, t)
-	if err := exec.Command("/bin/bash", "-c", cmd).Run(); err != nil {
-		return err
-	}
 
-	return nil
+	_, err := tg.michaAPI.SendMessage(tg.chatID, t, nil)
+
+	return err
 }
 
 //SendFile ...
@@ -91,15 +83,4 @@ func (tg *TGNotifier) SendFile(fp string, m string) error {
 	}
 
 	return nil
-}
-
-func sendCat(chatID int64, bot *margelet.Margelet) {
-	if bot.ChatConfigRepository.Get(chatID) == "yes" {
-		bytes := []byte("rpi home")
-
-		msg := tgbotapi.NewPhotoUpload(chatID, tgbotapi.FileBytes{"cat.jpg", bytes})
-		msg.ChatID = chatID
-
-		bot.Send(msg)
-	}
 }

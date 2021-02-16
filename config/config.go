@@ -63,7 +63,13 @@ type SentrySettings struct {
 }
 
 type Notifier struct {
-	Type string `json:"type"`
+	Type    string          `json:"type"`
+	Options NotifierOptions `json:"options"`
+}
+
+type NotifierOptions struct {
+	ChatID string `json:"chat_id"`
+	Token  string `json:"token"`
 }
 
 // New ...

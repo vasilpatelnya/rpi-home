@@ -1,13 +1,13 @@
 package servicecontainer
 
 import (
-	"github.com/vasilpatelnya/rpi-home/container/notification"
-	"github.com/vasilpatelnya/rpi-home/container/notification/telegram"
 	"time"
 
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/vasilpatelnya/rpi-home/config"
+	"github.com/vasilpatelnya/rpi-home/container/notification"
+	"github.com/vasilpatelnya/rpi-home/container/notification/telegram"
 	sentryhelper "github.com/vasilpatelnya/rpi-home/container/sentry-helper"
 	"github.com/vasilpatelnya/rpi-home/dataservice/event_data/mongodb"
 )
@@ -64,7 +64,8 @@ func (sc *ServiceContainer) InitLogger() error {
 func (sc *ServiceContainer) InitNotifier() error {
 	switch sc.AppConfig.Notifier.Type {
 	case "telegram":
-		sc.Notifier = telegram.New()
+		options := sc.AppConfig.Notifier.Options
+		sc.Notifier = telegram.New(options.Token, options.ChatID)
 	}
 
 	return nil

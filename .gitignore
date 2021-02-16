@@ -9,3 +9,7 @@ docker
 
 coverage.txt
 coverage.out
+
+config/development.json
+config/docker.json
+config/local.json
