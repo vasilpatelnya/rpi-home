@@ -16,7 +16,8 @@ services:
 
   mongodb:
     container_name: "rpihome_mongodb"
-    image: mongo:latest
+    image: gabrielrf/docker-mongodb-rpi
+    restart: always
     ports:
       - "27018:27017"
     volumes:
@@ -29,7 +30,7 @@ services:
     ports: 
       - "8765:8765"
     hostname: "motioneye"
-    restart: "always"
+    restart: always
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/motioneye:/etc/motioneye
