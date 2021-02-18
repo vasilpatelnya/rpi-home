@@ -4,7 +4,7 @@ WORKDIR /app/build
 COPY . .
 RUN go mod download
 RUN go build -o rpihome ./cmd/rpihome
-RUN go build -o detector ./cmd/detector
+RUN go build -o out/detector ./cmd/detector
 
 #PRODUCTION STAGE
 FROM alpine:3.12.0
