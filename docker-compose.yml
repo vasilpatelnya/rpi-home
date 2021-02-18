@@ -13,7 +13,7 @@ services:
       - mongodb
     volumes:
       - ./config/docker.json:/app/config/docker.json
-      - ./detector:/app/detector
+      - ./detector:/app/build/out
 
   mongodb:
     container_name: "rpihome_mongodb"
