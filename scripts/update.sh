@@ -14,7 +14,7 @@ echo -e "${GREEN}finish updating${NORMAL}"
 # Обновляем приложение из репозитория.
 
 echo -e "${GREEN}Update app${NORMAL}"
-cd /home/pi/go/src/github.com/vasilpatelnya/rpi-home
+cd /home/pi/go/src/github.com/vasilpatelnya/rpi-home || exit
 git pull origin master
 echo -e "${GREEN}Finish updating app${NORMAL}"
 
