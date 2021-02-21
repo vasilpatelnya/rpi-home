@@ -18,7 +18,7 @@ services:
 
   mongodb:
     container_name: "rpihome_mongodb"
-    image: gabrielrf/docker-mongodb-rpi
+    image: nonoroazoro/rpi-mongo
     restart: always
     ports:
       - "27018:27017"
