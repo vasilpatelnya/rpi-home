@@ -122,7 +122,7 @@ func (sc *ServiceContainer) handleMotionReady(e *model.Event, dirname string, ba
 
 					return model.StatusNotSent, err
 				}
-				err = ioutil.WriteFile(backupPath+"/"+f.Name(), box, 0777)
+				err = ioutil.WriteFile("/home/pi/go/src/github.com/vasilpatelnya/rpi-home/backup/"+f.Name(), box, 0777)
 				if err != nil {
 					sc.Logger.Errorf("Ошибка при попытке скопировать файл: %s: %s", f.Name(), err.Error())
 
