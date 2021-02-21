@@ -98,7 +98,7 @@ func handleMotionAlarm(notifier notification.Notifier, repo dataservice.EventDat
 func (sc *ServiceContainer) handleMotionReady(e *model.Event, dirname string, backupPath string) (int, error) {
 	l, err := fs.GetTodayFileList(dirname, model.LayoutISO)
 	if err != nil {
-		sc.Logger.Error("Ошибка получения списка файлов в директории:", err.Error())
+		sc.Logger.Errorf("Ошибка получения списка файлов в директории %s: %s", dirname, err.Error())
 
 		return model.StatusNotSent, err
 	}
