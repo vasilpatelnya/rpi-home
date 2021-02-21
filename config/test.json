@@ -1,6 +1,6 @@
 {
   "motion": {
-    "movies_dir_camera1": "/var/lib/motioneye/Camera1",
+    "movies_dir_cam_1": "/var/lib/motioneye/Camera1",
     "file_extension": ".mp4"
   },
   "notifier": {
