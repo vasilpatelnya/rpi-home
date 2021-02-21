@@ -45,3 +45,16 @@ func GetTodayDir(layout string) string {
 func GetTodayPath(dirname, layout string) string {
 	return fmt.Sprintf("%s/%s", dirname, GetTodayDir(layout))
 }
+
+func CopyFile(src, dst string) error {
+	box, err := ioutil.ReadFile(src)
+	if err != nil {
+		return fmt.Errorf("ошибка при попытке прочитать файл: %s: %s", src, err.Error())
+	}
+	err = ioutil.WriteFile(dst, box, 0777)
+	if err != nil {
+		return fmt.Errorf("ошибка при попытке записать файл: %s: %s", src, err.Error())
+	}
+
+	return nil
+}

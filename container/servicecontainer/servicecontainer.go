@@ -2,10 +2,12 @@ package servicecontainer
 
 import (
 	"fmt"
+	"github.com/vasilpatelnya/rpi-home/dataservice"
 	"github.com/vasilpatelnya/rpi-home/model"
 	"github.com/vasilpatelnya/rpi-home/tool/jsontool"
 	"log"
 	"net/http"
+	"runtime"
 	"time"
 
 	"github.com/pkg/errors"
@@ -23,6 +25,7 @@ type ServiceContainer struct {
 	DB        *config.ConnectionContainer
 	Logger    *logrus.Logger
 	Notifier  notification.Notifier
+	Repo      dataservice.EventData
 }
 
 // InitApp initializes container config in the specified path.
@@ -41,6 +44,9 @@ func (sc *ServiceContainer) InitApp(filename string) error {
 	if err != nil {
 		return errors.Wrap(err, "Ошибка при инициализации модуля отправки уведомлений")
 	}
+
+	_, thisFilename, _, _ := runtime.Caller(0)
+	sc.Logger.Infof("Path servicecontainer.go: %s", thisFilename)
 
 	go sc.InitApiServer()
 
@@ -149,11 +155,11 @@ func (sc *ServiceContainer) Run() {
 	for {
 		select {
 		case <-mainTicker.C:
-			repo := &mongodb.EventDataMongo{
+			sc.Repo = &mongodb.EventDataMongo{
 				EventsCollection: sc.DB.Mongo.C("events"), // todo to cfg
 				Logger:           sc.Logger,
 			}
-			sc.EventHandle(repo, sc.AppConfig.Motion.MoviesDirCam1)
+			sc.EventHandle()
 		}
 	}
 }

@@ -2,7 +2,6 @@ package servicecontainer
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -21,21 +20,13 @@ const (
 )
 
 // todo переделать на аргумент с несколькими путями к записям: например для нескольких камер
-func (sc *ServiceContainer) EventHandle(repo dataservice.EventData, moviesPath string) {
-	sc.handleNew(repo, moviesPath)
-	sc.handleFail(repo, moviesPath)
+func (sc *ServiceContainer) EventHandle() {
+	sc.handleEvents(model.StatusNew, sc.AppConfig.Motion.MoviesDirCam1, "/home/pi/go/src/github.com/vasilpatelnya/rpi-home/backup")  // todo to cfg
+	sc.handleEvents(model.StatusFail, sc.AppConfig.Motion.MoviesDirCam1, "/home/pi/go/src/github.com/vasilpatelnya/rpi-home/backup") // todo to cfg
 }
 
-func (sc *ServiceContainer) handleNew(repo dataservice.EventData, moviesPath string) {
-	sc.handleEvents(repo, model.StatusNew, moviesPath, "./../../backup") // todo to cfg
-}
-
-func (sc *ServiceContainer) handleFail(repo dataservice.EventData, moviesPath string) {
-	sc.handleEvents(repo, model.StatusFail, moviesPath, "./../../backup") // todo to cfg
-}
-
-func (sc *ServiceContainer) handleEvents(repo dataservice.EventData, status int, moviesPath, backupPath string) {
-	events, err := repo.GetAllByStatus(status)
+func (sc *ServiceContainer) handleEvents(status int, moviesPath, backupPath string) {
+	events, err := sc.Repo.GetAllByStatus(status)
 	if err != nil {
 		sentryhelper.Handle(sc.Logger, err, "Ошибка получения записей событий из БД")
 	}
@@ -44,13 +35,13 @@ func (sc *ServiceContainer) handleEvents(repo dataservice.EventData, status int,
 		for _, e := range events {
 			switch e.Type {
 			case model.TypeMotion:
-				status, err := handleMotionAlarm(sc.Notifier, repo, &e)
+				status, err := handleMotionAlarm(sc.Notifier, sc.Repo, &e)
 				if err != nil {
 					msg := fmt.Sprintf("Ошибка обработки события: %s %s", e.Name, err.Error())
 					sentryhelper.Handle(sc.Logger, err, msg)
 					if status == model.StatusNotSent {
 						e.Status = model.StatusFail
-						err = repo.Save(&e)
+						err = sc.Repo.Save(&e)
 						if err != nil {
 							msg := fmt.Sprintf("Ошибка сохранения события: %s %s", e.Name, err.Error())
 							sentryhelper.Handle(sc.Logger, err, msg)
@@ -59,7 +50,7 @@ func (sc *ServiceContainer) handleEvents(repo dataservice.EventData, status int,
 					}
 				}
 				e.Status = model.StatusReady
-				err = repo.Save(&e)
+				err = sc.Repo.Save(&e)
 				if err != nil {
 					msg := fmt.Sprintf("Ошибка сохранения события: %s %s", e.Name, err.Error())
 					sentryhelper.Handle(sc.Logger, err, msg)
@@ -72,7 +63,7 @@ func (sc *ServiceContainer) handleEvents(repo dataservice.EventData, status int,
 					sentryhelper.Handle(sc.Logger, err, msg)
 				}
 
-				err = repo.SaveUpdated(&e, e.Status)
+				err = sc.Repo.SaveUpdated(&e, e.Status)
 				if err != nil {
 					msg := fmt.Sprintf("Ошибка сохранения события: %s %s", e.Name, err.Error())
 					sentryhelper.Handle(sc.Logger, err, msg)
@@ -109,15 +100,9 @@ func (sc *ServiceContainer) handleMotionReady(e *model.Event, dirname string, ba
 		if ext == ".mp4" && f.Size() > 0 { // todo to cfg
 			if f.Size() < MaxSize {
 				msg := e.GetVideoReadyMessage()
-				box, err := ioutil.ReadFile(fp)
+				err = fs.CopyFile(fp, "/home/pi/go/src/github.com/vasilpatelnya/rpi-home/backup/"+f.Name())
 				if err != nil {
-					sc.Logger.Errorf("Ошибка при попытке прочитать файл: %s: %s", f.Name(), err.Error())
-
-					return model.StatusNotSent, err
-				}
-				err = ioutil.WriteFile("/home/pi/go/src/github.com/vasilpatelnya/rpi-home/backup/"+f.Name(), box, 0777)
-				if err != nil {
-					sc.Logger.Errorf("Ошибка при попытке скопировать файл: %s: %s", f.Name(), err.Error())
+					sc.Logger.Errorf("Ошибка при попытке скопировать видео %s: %s", f.Name(), err.Error())
 
 					return model.StatusNotSent, err
 				}
