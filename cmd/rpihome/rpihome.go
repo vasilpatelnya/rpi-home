@@ -6,10 +6,12 @@ import (
 	"github.com/pkg/errors"
 	"github.com/vasilpatelnya/rpi-home/config"
 	"github.com/vasilpatelnya/rpi-home/container/servicecontainer"
+	"github.com/vasilpatelnya/rpi-home/model"
 	"io"
 	"log"
 	"net/http"
 	"os"
+	"time"
 )
 
 var configPath string
@@ -21,8 +23,6 @@ func init() {
 func main() {
 	flag.Parse()
 	log.Println("The application was launched to the path to the configuration file:", configPath)
-
-	go apiServer()
 
 	run()
 }
@@ -45,10 +45,11 @@ func run() {
 		log.Println("Error on try create application container:", err.Error())
 		os.Exit(1)
 	}
+	go apiServer(appContainer.DB.Mongo)
 	appContainer.Run()
 }
 
-func apiServer() {
+func apiServer(mongo *config.MongoConnection) {
 	http.HandleFunc("/detect", func(w http.ResponseWriter, r *http.Request) {
 		type DetectRequest struct {
 			Device string `json:"device"`
@@ -60,6 +61,25 @@ func apiServer() {
 		}
 
 		log.Printf("Request successfully decoded: device '%s', type '%d'", request.Device, request.Type)
+
+		event := model.New()
+		event.Device = request.Device
+		event.Type = request.Type
+
+		event.Name = "Обнаружено движение!"
+		if event.Type == model.TypeMovieReady {
+			event.Name = "Новое видео готово!"
+		}
+
+		event.Created = time.Now().UnixNano()
+		event.Updated = time.Now().UnixNano()
+
+		err := mongo.C("events").Insert(event) // todo to cfg
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		log.Println("Создана запись в БД")
 	})
 	if err := http.ListenAndServe(":3000", nil); err != nil {
 		log.Fatalf("Api server error: %s", err.Error())

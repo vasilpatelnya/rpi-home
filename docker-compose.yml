@@ -3,6 +3,7 @@ version: "3.7"
 services:
   rpihome:
     container_name: "rpihome"
+    hostname: "rpihome"
     build:
       context: ./
       dockerfile: Dockerfile
@@ -10,6 +11,7 @@ services:
       - "3000:3000"
     links:
       - mongodb
+      - motioneye
     restart: always
     depends_on:
       - mongodb
