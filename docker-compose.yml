@@ -11,6 +11,7 @@ services:
     restart: always
     depends_on:
       - mongodb
+      - motioneye
     volumes:
       - ./config/docker.json:/app/config/docker.json
       - ./detector:/app/build/out
@@ -30,11 +31,13 @@ services:
     image: "ccrisan/motioneye:master-armhf"
     ports: 
       - "8765:8765"
+      - "3000:3000"
     hostname: "motioneye"
     restart: always
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/motioneye:/etc/motioneye
       - /var/lib/motioneye:/var/lib/motioneye
+      - ./scripts:/etc/scripts
     devices: 
       - /dev/video0
