@@ -118,19 +118,19 @@ func (sc *ServiceContainer) handleMotionReady(e *model.Event, dirname string, ba
 				sc.Logger.Infof("файл %s был отправлен в телеграм", fp)
 				box, err := ioutil.ReadFile(fp)
 				if err != nil {
-					sc.Logger.Error("Ошибка при попытке прочитать файл:", f.Name(), err)
+					sc.Logger.Errorf("Ошибка при попытке прочитать файл: %s: %s", f.Name(), err.Error())
 
 					return model.StatusNotSent, err
 				}
 				err = ioutil.WriteFile(backupPath+"/"+f.Name(), box, 0777)
 				if err != nil {
-					sc.Logger.Error("Ошибка при попытке скопировать файл:", f.Name(), err)
+					sc.Logger.Errorf("Ошибка при попытке скопировать файл: %s: %s", f.Name(), err.Error())
 
 					return model.StatusNotSent, err
 				}
 				err = os.Remove(fp)
 				if err != nil {
-					sc.Logger.Error("Ошибка при попытке удалить файл:", f.Name(), err)
+					sc.Logger.Errorf("Ошибка при попытке удалить файл: %s: %s", f.Name(), err.Error())
 
 					return model.StatusNotSent, err
 				}

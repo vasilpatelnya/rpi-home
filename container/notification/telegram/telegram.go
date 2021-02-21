@@ -3,7 +3,6 @@ package telegram
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"github.com/onrik/micha"
 	"github.com/vasilpatelnya/rpi-home/container/notification"
 	"github.com/vasilpatelnya/rpi-home/tool/fs"
@@ -64,12 +63,8 @@ func (tg *TGNotifier) SendFile(fp string, m string) error {
 	if !exist {
 		return errors.New("такого файла не существует или указанный путь неверен")
 	}
-	caption := ""
-	if len(m) > 0 {
-		caption = fmt.Sprintf(`--caption "%s"`, m)
-	}
 	data := bytes.NewBufferString("video data")
-	_, err := tg.michaAPI.SendVideoFile(tg.chatID, data, fp, &micha.SendVideoOptions{Caption: caption})
+	_, err := tg.michaAPI.SendVideoFile(tg.chatID, data, fp, &micha.SendVideoOptions{Caption: m})
 
 	return err
 }
