@@ -35,6 +35,8 @@ services:
     image: "ccrisan/motioneye:master-armhf"
     ports: 
       - "8765:8765"
+    links:
+      - "rpihome:rpihome"
     hostname: "motioneye"
     restart: always
     volumes:
