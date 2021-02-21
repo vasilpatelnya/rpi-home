@@ -27,11 +27,11 @@ func (sc *ServiceContainer) EventHandle(repo dataservice.EventData, moviesPath s
 }
 
 func (sc *ServiceContainer) handleNew(repo dataservice.EventData, moviesPath string) {
-	sc.handleEvents(repo, model.StatusNew, moviesPath, "./backup") // todo to cfg
+	sc.handleEvents(repo, model.StatusNew, moviesPath, "./../../backup") // todo to cfg
 }
 
 func (sc *ServiceContainer) handleFail(repo dataservice.EventData, moviesPath string) {
-	sc.handleEvents(repo, model.StatusFail, moviesPath, "./backup") // todo to cfg
+	sc.handleEvents(repo, model.StatusFail, moviesPath, "./../../backup") // todo to cfg
 }
 
 func (sc *ServiceContainer) handleEvents(repo dataservice.EventData, status int, moviesPath, backupPath string) {
