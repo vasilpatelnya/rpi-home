@@ -45,5 +45,5 @@ services:
 
 networks:
   default:
-    name: "rpi-network"
-    external: true
+    external:
+      name: default
