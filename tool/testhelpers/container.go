@@ -4,6 +4,9 @@ import (
 	"github.com/pkg/errors"
 	"github.com/vasilpatelnya/rpi-home/config"
 	"github.com/vasilpatelnya/rpi-home/container/servicecontainer"
+	"path"
+	"runtime"
+	"strings"
 )
 
 // GetTestContainer ...
@@ -17,4 +20,10 @@ func GetTestContainer(filename string) (*servicecontainer.ServiceContainer, erro
 	}
 
 	return &c, nil
+}
+
+func GetTestDataDir() string {
+	_, thisFilename, _, _ := runtime.Caller(0)
+
+	return strings.Replace(path.Dir(thisFilename), "tool/testhelpers", "testdata", -1)
 }

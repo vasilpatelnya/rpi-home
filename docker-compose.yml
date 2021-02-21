@@ -16,7 +16,8 @@ services:
       - mongodb
     volumes:
       - ./config/docker.json:/app/config/docker.json
-      - /var/lib/motioneye:/var/lib/motioneye
+      - /backup:/var/lib/motioneye
+      -
 
   mongodb:
     container_name: "rpihome_mongodb"

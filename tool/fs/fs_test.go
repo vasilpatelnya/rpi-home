@@ -4,6 +4,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/vasilpatelnya/rpi-home/container/notification/telegram"
 	"github.com/vasilpatelnya/rpi-home/tool/fs"
+	"github.com/vasilpatelnya/rpi-home/tool/testhelpers"
+	"io/ioutil"
 	"testing"
 	"time"
 )
@@ -23,4 +25,13 @@ func TestGetTodayFileList(t *testing.T) {
 	_, err := fs.GetTodayFileList(dir, telegram.LayoutISO)
 	assert.NotNil(t, err)
 	assert.Contains(t, err.Error(), dir+" directory is not exist")
+}
+
+func TestCopyFile(t *testing.T) {
+	newFilePath := testhelpers.GetTestDataDir() + "/test.mp4"
+	err := ioutil.WriteFile(newFilePath, []byte("test data"), 0777)
+	assert.Nil(t, err)
+
+	dst := testhelpers.GetTestDataDir() + "/test_copy.mp4"
+	assert.Nil(t, fs.CopyFile(newFilePath, dst))
 }
