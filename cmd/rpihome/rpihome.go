@@ -12,31 +12,20 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 	"time"
 )
 
-const defaultDevice = "Неизвестное устройство"
-
 var (
 	configPath string
-	deviceCLI  string
-	typeCLI    int
 )
 
 func init() {
 	flag.StringVar(&configPath, "c", "config/development.json", "config path")
-	flag.StringVar(&deviceCLI, "d", defaultDevice, "Имя камеры")
-	flag.IntVar(&typeCLI, "t", model.TypeUndefined, "Тип события")
 }
 
 func main() {
 	flag.Parse()
 	log.Println("The application was launched to the path to the configuration file:", configPath)
-
-	if deviceCLI != defaultDevice || typeCLI != model.TypeUndefined {
-		log.Println("CLI works!!! " + deviceCLI + ":" + strconv.Itoa(typeCLI))
-	}
 
 	run()
 }
