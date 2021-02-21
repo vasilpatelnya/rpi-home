@@ -1,1 +1,4 @@
-cd /home/pi/go/src/github.com/vasilpatelnya/rpi-home && ./detector -device deviceName -type 2
+curl --header "Content-Type: application/json" \
+  --request POST \
+  --data '{"device":"entrance","type":2}' \
+  http://rpihome:3000/api/v1/motioneye

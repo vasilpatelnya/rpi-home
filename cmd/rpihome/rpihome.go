@@ -53,7 +53,7 @@ func run() {
 }
 
 func apiServer(mongo *config.MongoConnection) {
-	http.HandleFunc("/detect", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/api/v1/motioneye", func(w http.ResponseWriter, r *http.Request) {
 		type DetectRequest struct {
 			Device string `json:"device"`
 			Type   int    `json:"type"`
