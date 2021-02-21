@@ -100,7 +100,7 @@ func (sc *ServiceContainer) handleMotionReady(e *model.Event, dirname string, ba
 		if ext == ".mp4" && f.Size() > 0 { // todo to cfg
 			if f.Size() < MaxSize {
 				msg := e.GetVideoReadyMessage()
-				dstPath := "/home/pi/go/src/github.com/vasilpatelnya/rpi-home/backup/" + f.Name()
+				dstPath := "/app/backup/" + f.Name()
 				err = fs.CopyFile(fp, dstPath)
 				if err != nil {
 					sc.Logger.Errorf("Ошибка при попытке скопировать видео \nиз %s \nв %s\n Ошибка: %s", fp, dstPath, err.Error())
