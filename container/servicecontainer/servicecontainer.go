@@ -73,7 +73,6 @@ func (sc *ServiceContainer) InitNotifier() error {
 
 // Run ...
 func (sc *ServiceContainer) Run() {
-	timeFormat := "2 January 2006 15:04" // todo to cfg
 	mainTicker := time.NewTicker(sc.AppConfig.Periods.MainTickerTime * time.Millisecond)
 
 	sentryhelper.Start(sc.Logger, sc.AppConfig.SentrySettings.SentryUrl)
@@ -81,16 +80,12 @@ func (sc *ServiceContainer) Run() {
 	defer mainTicker.Stop()
 	for {
 		select {
-		case t := <-mainTicker.C:
-			sc.Logger.Infof("Итерация главного цикла началась. Время: %s", t.Format(timeFormat))
-
+		case <-mainTicker.C:
 			repo := &mongodb.EventDataMongo{
 				EventsCollection: sc.DB.Mongo.C("events"), // todo to cfg
 				Logger:           sc.Logger,
 			}
 			sc.EventHandle(repo, sc.AppConfig.Motion.MoviesDirCam1)
-
-			sc.Logger.Infof("Итерация главного цикла закончилась. Время: %s", t.Format(timeFormat))
 		}
 	}
 }

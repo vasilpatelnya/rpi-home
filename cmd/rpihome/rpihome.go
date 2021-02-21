@@ -1,11 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
-	"fmt"
 	"github.com/pkg/errors"
 	"github.com/vasilpatelnya/rpi-home/config"
 	"github.com/vasilpatelnya/rpi-home/container/servicecontainer"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -49,10 +50,25 @@ func run() {
 
 func apiServer() {
 	http.HandleFunc("/detect", func(w http.ResponseWriter, r *http.Request) {
-		log.Println("Request on /detect")
-		fmt.Fprintf(w, "motion detected!")
+		type DetectRequest struct {
+			Device string `json:"device"`
+			Type   int    `json:"type"`
+		}
+		var request DetectRequest
+		if err := JsonDecode(r.Body, &request); err != nil {
+			log.Printf("json decode error: %s\n", err.Error())
+		}
+
+		log.Printf("Request successfully decoded: device '%s', type '%d'", request.Device, request.Type)
 	})
 	if err := http.ListenAndServe(":3000", nil); err != nil {
 		log.Fatalf("Api server error: %s", err.Error())
 	}
+}
+
+func JsonDecode(r io.Reader, v interface{}) error {
+	decoder := json.NewDecoder(r)
+	err := decoder.Decode(v)
+
+	return err
 }

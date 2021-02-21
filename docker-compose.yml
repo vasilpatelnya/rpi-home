@@ -16,7 +16,7 @@ services:
       - motioneye
     volumes:
       - ./config/docker.json:/app/config/docker.json
-      - ./detector:/app/build/out
+      - /var/lib/motioneye:/var/lib/motioneye
 
   mongodb:
     container_name: "rpihome_mongodb"
@@ -42,3 +42,8 @@ services:
       - ./scripts:/etc/scripts
     devices: 
       - /dev/video0
+
+networks:
+  default:
+    name: "rpi-network"
+    external: true
