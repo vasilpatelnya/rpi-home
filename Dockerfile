@@ -4,11 +4,9 @@ WORKDIR /app/build
 COPY . .
 RUN go mod download
 RUN go build -o rpihome ./cmd/rpihome
-RUN go build -o out/detector ./cmd/detector
 
 #PRODUCTION STAGE
 FROM alpine:3.12.0
 WORKDIR /app
 COPY --from=builder /app/build/rpihome /app/rpihome
-COPY --from=builder /app/build/out/detector /app/detector
 CMD ./rpihome -c config/docker.json

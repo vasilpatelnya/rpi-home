@@ -30,6 +30,7 @@ type Event struct {
 
 func New() *Event {
 	return &Event{
+		ID:      bson.NewObjectId(),
 		Type:    TypeUndefined,
 		Status:  StatusNew,
 		Name:    "",

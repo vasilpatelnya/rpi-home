@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"flag"
+	"fmt"
 	"github.com/pkg/errors"
 	"github.com/vasilpatelnya/rpi-home/config"
 	"github.com/vasilpatelnya/rpi-home/container/servicecontainer"
@@ -60,12 +61,20 @@ func apiServer(mongo *config.MongoConnection) {
 			log.Printf("json decode error: %s\n", err.Error())
 		}
 
+		if request.Device == "" || request.Type == model.TypeUndefined {
+			_, err := fmt.Fprintln(w, "Не указан тип события или название устройства.")
+			if err != nil {
+				log.Printf("Fprintln() error: %s", err.Error())
+			}
+
+			return
+		}
+
 		log.Printf("Request successfully decoded: device '%s', type '%d'", request.Device, request.Type)
 
 		event := model.New()
 		event.Device = request.Device
 		event.Type = request.Type
-
 		event.Name = "Обнаружено движение!"
 		if event.Type == model.TypeMovieReady {
 			event.Name = "Новое видео готово!"
