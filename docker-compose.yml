@@ -46,4 +46,4 @@ services:
 networks:
   default:
     external:
-      name: default
+      name: rpi-home_default
