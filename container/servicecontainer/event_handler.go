@@ -108,16 +108,12 @@ func (sc *ServiceContainer) handleMotionReady(e *model.Event, dirname string, ba
 		ext := filepath.Ext(f.Name())
 		if ext == ".mp4" && f.Size() > 0 { // todo to cfg
 			if f.Size() < MaxSize {
-				if os.Getenv("APP_MODE") != "test" {
-					msg := e.GetVideoReadyMessage()
-					err := sc.Notifier.SendFile(fp, msg)
-					if err != nil {
-						sc.Logger.Error("Ошибка при попытке отправить видео", f.Name(), err)
+				msg := e.GetVideoReadyMessage()
+				err := sc.Notifier.SendFile(fp, msg)
+				if err != nil {
+					sc.Logger.Error("Ошибка при попытке отправить видео", f.Name(), err)
 
-						return model.StatusNotSent, err
-					}
-				} else {
-					sc.Logger.Info("Вы находитесь в тестовом режиме. Отправка файлов игнорируется.")
+					return model.StatusNotSent, err
 				}
 				sc.Logger.Infof("файл %s был отправлен в телеграм", fp)
 				box, err := ioutil.ReadFile(fp)

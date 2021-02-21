@@ -11,11 +11,9 @@ services:
       - "3000:3000"
     links:
       - mongodb
-      - motioneye
     restart: always
     depends_on:
       - mongodb
-      - motioneye
     volumes:
       - ./config/docker.json:/app/config/docker.json
       - /var/lib/motioneye:/var/lib/motioneye

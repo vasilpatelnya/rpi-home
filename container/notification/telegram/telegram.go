@@ -3,13 +3,10 @@ package telegram
 import (
 	"errors"
 	"fmt"
-	"log"
-	"os"
-	"os/exec"
-
 	"github.com/onrik/micha"
 	"github.com/vasilpatelnya/rpi-home/container/notification"
 	"github.com/vasilpatelnya/rpi-home/tool/fs"
+	"log"
 )
 
 const (
@@ -68,19 +65,11 @@ func (tg *TGNotifier) SendFile(fp string, m string) error {
 	if !exist {
 		return errors.New("такого файла не существует или указанный путь неверен")
 	}
-	if os.Getenv("APP_MODE") == "test" {
-		log.Println("Вы находитесь в тестовом режиме. Отправка файлов игнорируется.")
-		return nil
-	}
 	caption := ""
 	if len(m) > 0 {
 		caption = fmt.Sprintf(`--caption "%s"`, m)
 	}
-	cmd := fmt.Sprintf(`%s --file %s %s`, appPath, fp, caption)
-	if err := exec.Command("/bin/bash", "-c", cmd).Run(); err != nil {
-		log.Println("Error after command '"+cmd+"':", err.Error())
-		return err
-	}
+	_, err := tg.michaAPI.SendVideo(tg.chatID, fp, &micha.SendVideoOptions{Caption: caption})
 
-	return nil
+	return err
 }
