@@ -1,6 +1,7 @@
 package telegram
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"github.com/onrik/micha"
@@ -10,8 +11,6 @@ import (
 )
 
 const (
-	appPath = "/usr/local/bin/telegram-send"
-
 	// LayoutISO ...
 	LayoutISO = "2006-01-02"
 
@@ -69,7 +68,8 @@ func (tg *TGNotifier) SendFile(fp string, m string) error {
 	if len(m) > 0 {
 		caption = fmt.Sprintf(`--caption "%s"`, m)
 	}
-	_, err := tg.michaAPI.SendVideo(tg.chatID, fp, &micha.SendVideoOptions{Caption: caption})
+	data := bytes.NewBufferString("video data")
+	_, err := tg.michaAPI.SendVideoFile(tg.chatID, data, fp, &micha.SendVideoOptions{Caption: caption})
 
 	return err
 }

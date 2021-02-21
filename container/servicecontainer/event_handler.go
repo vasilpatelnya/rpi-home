@@ -111,7 +111,7 @@ func (sc *ServiceContainer) handleMotionReady(e *model.Event, dirname string, ba
 				msg := e.GetVideoReadyMessage()
 				err := sc.Notifier.SendFile(fp, msg)
 				if err != nil {
-					sc.Logger.Error("Ошибка при попытке отправить видео", f.Name(), err)
+					sc.Logger.Errorf("Ошибка при попытке отправить видео %s: %s", f.Name(), err.Error())
 
 					return model.StatusNotSent, err
 				}
