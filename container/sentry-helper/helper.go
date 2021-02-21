@@ -23,5 +23,5 @@ func Start(logger *logrus.Logger, url string) {
 
 func Handle(logger *logrus.Logger, err error, msg string) {
 	sentry.CaptureException(err)
-	logger.Debug(msg)
+	logger.Error(msg)
 }

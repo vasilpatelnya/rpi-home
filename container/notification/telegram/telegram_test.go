@@ -1,44 +1,39 @@
-package telegram
+package telegram_test
 
 import (
 	"github.com/stretchr/testify/assert"
+	"github.com/vasilpatelnya/rpi-home/config"
+	"github.com/vasilpatelnya/rpi-home/container/notification/telegram"
+	"github.com/vasilpatelnya/rpi-home/tool/testhelpers"
+	"io/ioutil"
 	"log"
 	"os"
 	"testing"
 )
 
+var testConfig *config.Config
+
 func TestMain(m *testing.M) {
-	err := os.Setenv("APP_MODE", "test")
+	var err error
+	testConfig, err = config.New("./../../../config/docker.json")
 	if err != nil {
 		log.Fatal(err)
 	}
-	m.Run()
+	os.Exit(m.Run())
 }
 
 func TestSendText(t *testing.T) {
-	tg := TGNotifier{}
-	t.Run("empty text", func(t *testing.T) {
-		err := tg.SendText("")
-		assert.Error(t, err, "отсутствует текст сообщения")
-	})
-	t.Run("simple text", func(t *testing.T) {
-		err := tg.SendText("simple text")
-		assert.Nil(t, err)
-	})
+	tg := telegram.New(testConfig.Notifier.Options.Token, testConfig.Notifier.Options.ChatID)
+	assert.Nil(t, tg.SendText("test message from Tosya"))
 }
 
 func TestSendFile(t *testing.T) {
-	tg := TGNotifier{}
-	t.Run("not existed path", func(t *testing.T) {
-		err := tg.SendFile("./notExist.txt", "")
-		assert.Error(t, err, "такого файла не существует или указанный путь неверен")
-	})
-	t.Run("empty path", func(t *testing.T) {
-		err := tg.SendFile("", "")
-		assert.Error(t, err, "не указан путь к файлу")
-	})
-	t.Run("all right", func(t *testing.T) {
-		err := tg.SendFile("./telegram_test.go", "тест")
-		assert.Nil(t, err)
-	})
+	tg := telegram.New(testConfig.Notifier.Options.Token, testConfig.Notifier.Options.ChatID)
+
+	src := testhelpers.GetTestDataDir() + "/2020-10-31/test.mp4"
+	err := ioutil.WriteFile(src, []byte("test data"), 0777)
+	assert.Nil(t, err)
+
+	t.Log(src)
+	assert.Nil(t, tg.SendFile(src, "test message"))
 }

@@ -121,7 +121,7 @@ func (sc *ServiceContainer) InitApiServer() {
 		for {
 			select {
 			case apiErr := <-apiErrChan:
-				sc.Logger.Errorf("apiserver error: %s", apiErr.Error())
+				sentryhelper.Handle(sc.Logger, apiErr, fmt.Sprintf("apiserver error: %s", apiErr.Error()))
 			}
 		}
 	}(apiErrChan)
