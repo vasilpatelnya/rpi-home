@@ -135,10 +135,11 @@ func (sc *ServiceContainer) handleMotionReady(e *model.Event, dirname string, ba
 					return model.StatusNotSent, err
 				}
 			} else {
-				// TODO чтобы постоянно не отсылать сообщение надо где-то зафиксировать отправку сообщения
-				if os.Getenv("APP_MODE") != "test" && os.Getenv("APP_MODE") != "prod" {
-					err := sc.Notifier.SendText("Файл слишком велик чтобы его пересылать в Telegram. Вы можете его посмотреть через веб-интерфейс. Имя файла: " + f.Name())
-					sentryhelper.Handle(sc.Logger, err, "Не удалось отправить текстовое сообщение о превышении размера видеофайла.")
+				err := sc.Notifier.SendText("Файл слишком велик чтобы его пересылать в Telegram. Вы можете его посмотреть через веб-интерфейс. Имя файла: " + f.Name())
+				sentryhelper.Handle(sc.Logger, err, "Не удалось отправить текстовое сообщение о превышении размера видеофайла.")
+				e.Status = model.StatusCanceled
+				if err := sc.DB.Mongo.C("events").UpdateId(e.ID, e); err != nil {
+					sc.Logger.Warningf("Ошибка сохранения события со статусом 'отменен'")
 				}
 			}
 		}

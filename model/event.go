@@ -9,9 +9,10 @@ import (
 )
 
 const (
-	StatusNew   int = 0
-	StatusReady int = 1
-	StatusFail  int = -1
+	StatusNew      int = 0
+	StatusReady    int = 1
+	StatusFail     int = -1
+	StatusCanceled int = -2
 
 	TypeUndefined  int = 0
 	TypeMotion     int = 1
