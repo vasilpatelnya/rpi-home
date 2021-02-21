@@ -49,6 +49,7 @@ func run() {
 
 func apiServer() {
 	http.HandleFunc("/detect", func(w http.ResponseWriter, r *http.Request) {
+		log.Println("Request on /detect")
 		fmt.Fprintf(w, "motion detected!")
 	})
 	if err := http.ListenAndServe(":3000", nil); err != nil {
