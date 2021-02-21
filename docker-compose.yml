@@ -33,7 +33,6 @@ services:
     image: "ccrisan/motioneye:master-armhf"
     ports: 
       - "8765:8765"
-      - "3000:3000"
     hostname: "motioneye"
     restart: always
     volumes:
