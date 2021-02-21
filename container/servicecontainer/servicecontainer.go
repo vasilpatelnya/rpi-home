@@ -1,6 +1,11 @@
 package servicecontainer
 
 import (
+	"fmt"
+	"github.com/vasilpatelnya/rpi-home/model"
+	"github.com/vasilpatelnya/rpi-home/tool/jsontool"
+	"log"
+	"net/http"
 	"time"
 
 	"github.com/pkg/errors"
@@ -37,6 +42,8 @@ func (sc *ServiceContainer) InitApp(filename string) error {
 		return errors.Wrap(err, "Ошибка при инициализации модуля отправки уведомлений")
 	}
 
+	go sc.InitApiServer()
+
 	return nil
 }
 
@@ -58,6 +65,67 @@ func (sc *ServiceContainer) InitLogger() error {
 	sc.Logger.SetReportCaller(sc.AppConfig.Logger.ShowCaller)
 
 	return err
+}
+
+// InitApiServer ...
+func (sc *ServiceContainer) InitApiServer() {
+	http.HandleFunc("/api/v1/motioneye", func(w http.ResponseWriter, r *http.Request) {
+		type DetectRequest struct {
+			Device string `json:"device"`
+			Type   int    `json:"type"`
+		}
+		var request DetectRequest
+		if err := jsontool.JsonDecode(r.Body, &request); err != nil {
+			log.Printf("json decode error: %s\n", err.Error())
+		}
+
+		if request.Device == "" || request.Type == model.TypeUndefined {
+			_, err := fmt.Fprintln(w, "Не указан тип события или название устройства.")
+			if err != nil {
+				log.Printf("Fprintln() error: %s", err.Error())
+			}
+
+			return
+		}
+
+		log.Printf("Request successfully decoded: device '%s', type '%d'", request.Device, request.Type)
+
+		event := model.New()
+		event.Device = request.Device
+		event.Type = request.Type
+		event.Name = "Обнаружено движение!"
+		if event.Type == model.TypeMovieReady {
+			event.Name = "Новое видео готово!"
+		}
+
+		event.Created = time.Now().UnixNano()
+		event.Updated = time.Now().UnixNano()
+
+		err := sc.DB.Mongo.C("events").Insert(event) // todo to cfg
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		log.Println("Создана запись в БД")
+	})
+
+	apiErrChan := make(chan error, 512)
+
+	go func(apiErrChan chan error) {
+		for {
+			select {
+			case apiErr := <-apiErrChan:
+				sc.Logger.Errorf("apiserver error: %s", apiErr.Error())
+			}
+		}
+	}(apiErrChan)
+
+	if err := http.ListenAndServe(":3000", nil); err != nil {
+		msg := fmt.Sprintf("Api server error: %s", err.Error())
+		sc.Logger.Errorln(msg)
+
+		apiErrChan <- err
+	}
 }
 
 // InitNotifier ...
