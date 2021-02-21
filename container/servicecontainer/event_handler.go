@@ -109,13 +109,6 @@ func (sc *ServiceContainer) handleMotionReady(e *model.Event, dirname string, ba
 		if ext == ".mp4" && f.Size() > 0 { // todo to cfg
 			if f.Size() < MaxSize {
 				msg := e.GetVideoReadyMessage()
-				err := sc.Notifier.SendFile(fp, msg)
-				if err != nil {
-					sc.Logger.Errorf("Ошибка при попытке отправить видео %s: %s", f.Name(), err.Error())
-
-					return model.StatusNotSent, err
-				}
-				sc.Logger.Infof("файл %s был отправлен в телеграм", fp)
 				box, err := ioutil.ReadFile(fp)
 				if err != nil {
 					sc.Logger.Errorf("Ошибка при попытке прочитать файл: %s: %s", f.Name(), err.Error())
@@ -128,6 +121,13 @@ func (sc *ServiceContainer) handleMotionReady(e *model.Event, dirname string, ba
 
 					return model.StatusNotSent, err
 				}
+				err = sc.Notifier.SendFile(fp, msg)
+				if err != nil {
+					sc.Logger.Errorf("Ошибка при попытке отправить видео %s: %s", f.Name(), err.Error())
+
+					return model.StatusNotSent, err
+				}
+				sc.Logger.Infof("файл %s был отправлен в телеграм", fp)
 				err = os.Remove(fp)
 				if err != nil {
 					sc.Logger.Errorf("Ошибка при попытке удалить файл: %s: %s", f.Name(), err.Error())

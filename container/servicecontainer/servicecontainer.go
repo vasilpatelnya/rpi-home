@@ -142,10 +142,10 @@ func (sc *ServiceContainer) InitNotifier() error {
 // Run ...
 func (sc *ServiceContainer) Run() {
 	mainTicker := time.NewTicker(sc.AppConfig.Periods.MainTickerTime * time.Millisecond)
+	defer mainTicker.Stop()
 
 	sentryhelper.Start(sc.Logger, sc.AppConfig.SentrySettings.SentryUrl)
 
-	defer mainTicker.Stop()
 	for {
 		select {
 		case <-mainTicker.C:
