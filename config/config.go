@@ -166,8 +166,7 @@ func mongoPing(mg *mgo.Database, settings MongoConnectionSettings) {
 		}
 
 		if errNum > settings.ConnectAttempts {
-			log.Println("Превышено количество попыток подключения к Mongo DB. Завершение работы.")
-			os.Exit(10)
+			log.Fatal("Превышено количество попыток подключения к Mongo DB. Завершение работы.")
 		}
 
 		time.Sleep(time.Second * settings.TimeBetweenAttempts)

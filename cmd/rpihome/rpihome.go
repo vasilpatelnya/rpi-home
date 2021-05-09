@@ -6,7 +6,6 @@ import (
 	"github.com/vasilpatelnya/rpi-home/config"
 	"github.com/vasilpatelnya/rpi-home/container/servicecontainer"
 	"log"
-	"os"
 )
 
 var (
@@ -39,8 +38,7 @@ func buildContainer(filename string) (*servicecontainer.ServiceContainer, error)
 func run() {
 	appContainer, err := buildContainer(configPath)
 	if err != nil {
-		log.Println("Error on try create application container:", err.Error())
-		os.Exit(1)
+		log.Fatal("Error on try create application container:", err.Error())
 	}
 	appContainer.Run()
 }
