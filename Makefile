@@ -10,8 +10,7 @@ build-run:
 
 .PHONY: test
 test:
-	go test -p 1  ./... -v -coverprofile=coverage.out;\
-    go tool cover -func=coverage.out
+	go test -p 1  ./... -v -coverprofile=coverage.out && go tool cover -func=coverage.out
 	
 .PHONY: install
 install:

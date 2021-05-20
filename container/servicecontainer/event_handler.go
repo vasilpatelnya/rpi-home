@@ -21,8 +21,8 @@ const (
 
 // todo переделать на аргумент с несколькими путями к записям: например для нескольких камер
 func (sc *ServiceContainer) EventHandle() {
-	sc.handleEvents(model.StatusNew, sc.AppConfig.Motion.MoviesDirCam1, "/home/pi/go/src/github.com/vasilpatelnya/rpi-home/backup")  // todo to cfg
-	sc.handleEvents(model.StatusFail, sc.AppConfig.Motion.MoviesDirCam1, "/home/pi/go/src/github.com/vasilpatelnya/rpi-home/backup") // todo to cfg
+	sc.handleEvents(model.StatusNew, sc.AppConfig.Motion.MoviesDirCam1, "/app/backup")
+	sc.handleEvents(model.StatusFail, sc.AppConfig.Motion.MoviesDirCam1, "/app/backup")
 }
 
 func (sc *ServiceContainer) handleEvents(status int, moviesPath, backupPath string) {
@@ -97,7 +97,7 @@ func (sc *ServiceContainer) handleMotionReady(e *model.Event, dirname string, ba
 		todayDir := fs.GetTodayDir(model.LayoutISO)
 		fp := fmt.Sprintf("%s/%s/%s", dirname, todayDir, f.Name())
 		ext := filepath.Ext(f.Name())
-		if ext == ".mp4" && f.Size() > 0 { // todo to cfg
+		if ext == sc.AppConfig.Motion.FileExtension && f.Size() > 0 {
 			if f.Size() < MaxSize {
 				msg := e.GetVideoReadyMessage()
 				dstPath := "/app/backup/" + f.Name() // todo refactor

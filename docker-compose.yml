@@ -18,6 +18,7 @@ services:
       - ./config/docker.json:/app/config/docker.json
       - /var/lib/motioneye:/var/lib/motioneye
       - ./backup:/app/backup
+
   mongodb:
     container_name: "rpihome_mongodb"
     image: nonoroazoro/rpi-mongo
