@@ -79,6 +79,8 @@ func New(p string) (*Config, error) {
 		return nil, err
 	}
 
+	log.Printf("Config info: %+v", c)
+
 	return c, nil
 }
 

@@ -6,8 +6,8 @@ import (
 )
 
 const (
-	rootPath = "./../../"
-	configPath = "config/test.json"
+	rootPath        = "./../../"
+	configPath      = "config/docker.json"
 	RightConfigPath = rootPath + configPath
 	WrongConfigPath = "./everybody.json"
 )

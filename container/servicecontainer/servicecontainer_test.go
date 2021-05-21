@@ -36,7 +36,7 @@ func TestServiceContainer_InitLogger(t *testing.T) {
 
 	t.Run("empty log level", func(t *testing.T) {
 		app.AppConfig.Logger.LogLevel = ""
-		assert.Nil(t, app.InitLogger())
+		assert.Equal(t, "not a valid logrus Level: \"\"", app.InitLogger().Error())
 		assert.Equal(t, "info", app.Logger.Level.String())
 		assert.Equal(t, c.Logger.ShowCaller, app.Logger.ReportCaller)
 	})

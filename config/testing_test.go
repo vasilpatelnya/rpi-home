@@ -1,6 +1,6 @@
 package config_test
 
 const (
-	rootPath = "./../"
-	configPath = "config/test.json"
+	rootPath   = "./../"
+	configPath = "config/docker.json"
 )
