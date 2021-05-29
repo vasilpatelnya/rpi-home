@@ -16,7 +16,7 @@ before_script:
   - mongo rpi --eval 'db.createUser({user:"travis",pwd:"test",roles:["readWrite"]});'
 
 script:
-  - go test -p 1  ./... -race -coverprofile=coverage.txt -covermode=atomic
+  - go test -p 1 -race -coverprofile=coverage.txt -covermode=atomic ./config ./container/servicecontainer ./dataservice/... ./model/... ./tool/... ./usecase
 
 after_success:
   - bash <(curl -s https://codecov.io/bash) -t b9afdeee-b8eb-4a3b-afea-d0b38375b635
