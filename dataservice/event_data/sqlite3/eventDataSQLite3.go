@@ -26,7 +26,7 @@ func (data *EventDataSQLite3) GetAllByStatus(s int) ([]model.Event, error) {
 
 	for rows.Next() {
 		p := model.Event{}
-		err = rows.Scan(&p.ID, &p.Status, &p.Type, &p.Device, &p.Name, &p.Updated, &p.Created)
+		err = rows.Scan(&p.SqlID, &p.Status, &p.Type, &p.Device, &p.Name, &p.Updated, &p.Created)
 		if err != nil {
 			data.Logger.Errorf("Ошибка при получении событий по статусу '%d': %s", s, err.Error())
 
