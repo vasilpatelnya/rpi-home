@@ -1,12 +1,12 @@
 .PHONY: build
 build:
-	/usr/local/go/bin/go build -o detector -v ./cmd/detector/main.go && /usr/local/go/bin/go build -o rpihome -v ./cmd/rpihome/rpihome.go
+	/usr/local/go/bin/go build -o rpihome -v ./cmd/rpihome/rpihome.go
 
 .DEFAULT_GOAL := build
 
 .PHONY: build-run
 build-run:
-	/usr/local/go/bin/go build -o rpihome -v ./cmd/rpihome/rpihome.go && ./rpihome -c config/development.json
+	/usr/local/go/bin/go build -o rpihome -v ./cmd/rpihome/rpihome.go && export ENVIRONMENT=default && ./rpihome
 
 .PHONY: test
 test:
