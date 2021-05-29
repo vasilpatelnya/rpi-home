@@ -7,7 +7,7 @@ go:
   - 1.15
 
 before_install:
-  - go get -t -v ./cmd/rpihome ./config ./container/... ./dataservice/... ./model/... ./tool/... ./usecase/...
+  - go get -t -v ./cmd/rpihome ./config ./container/... ./dataservice/... ./model/... ./tool/...
 
 services: mongodb
 
