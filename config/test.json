@@ -6,8 +6,8 @@
   "notifier": {
     "type": "telegram",
     "options": {
-      "chat_id": "",
-      "token": ""
+      "chat_id": "153510910",
+      "token": "1374299047:AAHBtaVH655eo6U5-3EMNWITK2khY0leev4"
     }
   },
   "periods": {
