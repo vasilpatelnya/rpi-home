@@ -3,6 +3,11 @@ language: go
 env:
   - GO111MODULE=on ENVIRONMENT=test
 
+arch:
+  - amd64
+  - arm64
+os: linux
+
 go:
   - 1.15
 
