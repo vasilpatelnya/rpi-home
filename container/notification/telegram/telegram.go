@@ -6,7 +6,6 @@ import (
 	"github.com/onrik/micha"
 	"github.com/vasilpatelnya/rpi-home/container/notification"
 	"github.com/vasilpatelnya/rpi-home/tool/fs"
-	"log"
 )
 
 const (
@@ -29,10 +28,10 @@ type TGNotifier struct {
 }
 
 // New ...
-func New(token, chatID string) notification.Notifier {
+func New(token, chatID string) (notification.Notifier, error) {
 	bot, err := micha.NewBot(token)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	go bot.Start()
@@ -40,7 +39,7 @@ func New(token, chatID string) notification.Notifier {
 	return &TGNotifier{
 		michaAPI: bot,
 		chatID:   micha.ChatID(chatID),
-	}
+	}, nil
 }
 
 //SendText ...

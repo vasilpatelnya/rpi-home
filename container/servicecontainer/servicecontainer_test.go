@@ -8,16 +8,10 @@ import (
 )
 
 func TestServiceContainer_InitApp(t *testing.T) {
-	t.Run("Right config path", func(t *testing.T) {
+	t.Run("Simple", func(t *testing.T) {
 		c := getTestServiceContainer()
-		err := c.InitApp(RightConfigPath)
+		err := c.InitApp()
 		assert.Nil(t, err)
-	})
-	t.Run("Wrong config path", func(t *testing.T) {
-		c := getTestServiceContainer()
-		err := c.InitApp(WrongConfigPath)
-		assert.NotNil(t, err)
-		assert.Contains(t, err.Error(), "no such file or directory")
 	})
 }
 

@@ -53,7 +53,7 @@ func (sc *ServiceContainer) InitApp() error {
 		return errors.Wrap(err, "Ошибка при инициализации модуля отправки уведомлений")
 	}
 
-	go sc.InitApiServer()
+	//go sc.InitApiServer()
 
 	return nil
 }
@@ -143,8 +143,14 @@ func (sc *ServiceContainer) InitApiServer() {
 func (sc *ServiceContainer) InitNotifier() error {
 	switch sc.AppConfig.Notifier.Type {
 	case "telegram":
+		var err error
 		options := sc.AppConfig.Notifier.Options
-		sc.Notifier = telegram.New(options.Token, options.ChatID)
+		sc.Notifier, err = telegram.New(options.Token, options.ChatID)
+		if err != nil {
+			return err
+		}
+	default:
+		return errors.New("Unknown notifier type: " + sc.AppConfig.Notifier.Type)
 	}
 
 	return nil
