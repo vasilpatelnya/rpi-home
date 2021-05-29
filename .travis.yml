@@ -5,8 +5,7 @@ env:
   - ENVIRONMENT=test
 
 go:
-  - 1.14.4
-  - tip
+  - 1.15
 
 before_install:
   - go get -t -v ./cmd/rpihome ./config ./container/... ./dataservice/... ./model/... ./tool/... ./usecase/...
