@@ -2,6 +2,7 @@ package sqlite3
 
 import (
 	"fmt"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/vasilpatelnya/rpi-home/model"
 	"time"
@@ -18,7 +19,8 @@ type EventDataSQLite3 struct {
 func (data *EventDataSQLite3) GetAllByStatus(s int) ([]model.Event, error) {
 	var events []model.Event
 
-	rows, err := data.DB.Query("select * from 'events'")
+	q := fmt.Sprintf("select * from 'events' where status = %d", s)
+	rows, err := data.DB.Query(q)
 	if err != nil {
 		panic(err)
 	}
@@ -63,6 +65,10 @@ func (data *EventDataSQLite3) Save(e *model.Event) error {
 }
 
 func (data *EventDataSQLite3) SaveUpdated(e *model.Event, status int) error {
+	if e.SqlID == 0 {
+		return errors.New("event without id")
+	}
+
 	e.Status = status
 	e.Updated = time.Now().UnixNano()
 

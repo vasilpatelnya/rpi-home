@@ -61,3 +61,9 @@ func getAllEvents(t *testing.T, conn *config.SQLite3Connection) []model.Event {
 
 	return events
 }
+
+func clearTable(t *testing.T, conn *config.SQLite3Connection, table string) {
+	_, db := conn.C()
+	_, err := db.Exec(`DELETE FROM ` + table)
+	assert.Nil(t, err)
+}
