@@ -2,15 +2,23 @@ package sqlite3_test
 
 import (
 	"github.com/stretchr/testify/assert"
+	"github.com/vasilpatelnya/rpi-home/model"
 	"testing"
 	"time"
 )
 
 func TestEventDataSQLite3_Save(t *testing.T) {
-	sc := getTestServiceContainer()
-	connection, db := sc.DB.SQLite3.C()
-	time.Sleep(1 * time.Second)
-	assert.Nil(t, db.Ping())
+	e := &model.Event{
+		Type:    model.TypeMotion,
+		Status:  model.StatusNew,
+		Name:    "test event",
+		Device:  "test device",
+		Created: time.Now().UnixNano(),
+		Updated: time.Now().UnixNano(),
+	}
 
-	defer func() { _ = connection.Close() }()
+	assert.Nil(t, testContainer.Repo.Save(e))
+	e.SqlID = 1
+	e.Name = "new"
+	assert.Nil(t, testContainer.Repo.Save(e))
 }

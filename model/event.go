@@ -20,6 +20,7 @@ const (
 )
 
 type Event struct {
+	SqlID   int           `bson:"sql_id"`
 	ID      bson.ObjectId `bson:"_id"`
 	Type    int           `bson:"type"`
 	Status  int           `bson:"status"`

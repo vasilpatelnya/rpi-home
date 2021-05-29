@@ -163,7 +163,8 @@ func (sc *ServiceContainer) Run() {
 
 	sentryhelper.Start(sc.Logger, sc.AppConfig.SentrySettings.SentryUrl)
 
-	sc.Repo = getRepo(sc.DB.SQLite3, sc.Logger)
+	conn, _ := sc.DB.SQLite3.C()
+	sc.Repo = GetRepo(conn, sc.Logger)
 
 	for {
 		select {
@@ -173,9 +174,9 @@ func (sc *ServiceContainer) Run() {
 	}
 }
 
-func getRepo(connection interface{}, logger *logrus.Logger) dataservice.EventData {
+func GetRepo(connection interface{}, logger *logrus.Logger) dataservice.EventData {
 	mongoConnection, isMongoConnection := connection.(config.MongoConnection)
-	sqlite3Connection, isSQLite3Connection := connection.(config.SQLite3Connection)
+	sqlite3Connection, isSQLite3Connection := connection.(*config.SQLite3Connection)
 	switch {
 	case isMongoConnection:
 		return &mongodb.EventDataMongo{
@@ -189,6 +190,8 @@ func getRepo(connection interface{}, logger *logrus.Logger) dataservice.EventDat
 			Logger: logger,
 		}
 	default:
+		logger.Error("Unknown connection")
+
 		return nil
 	}
 }

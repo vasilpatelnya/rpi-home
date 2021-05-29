@@ -18,7 +18,7 @@ type EventDataSQLite3 struct {
 func (data *EventDataSQLite3) GetAllByStatus(s int) ([]model.Event, error) {
 	var events []model.Event
 
-	rows, err := data.DB.Query("select * from events")
+	rows, err := data.DB.Query("select * from 'events'")
 	if err != nil {
 		panic(err)
 	}
@@ -40,9 +40,18 @@ func (data *EventDataSQLite3) GetAllByStatus(s int) ([]model.Event, error) {
 
 func (data *EventDataSQLite3) Save(e *model.Event) error {
 	q := fmt.Sprintf(
-		"INSERT INTO events (id, status, type, device, name, updated, created) VALUES('steven', 32) ON CONFLICT(id) DO UPDATE SET age=excluded.age",
+		`INSERT INTO events (status, type, device, name, updated, created) 
+		VALUES(%d, %d, '%s', '%s', %d, %d)`,
+		e.Status, e.Type, e.Device, e.Name, e.Updated, e.Created,
 	)
-	_, err := data.DB.Query(q)
+	if e.SqlID != 0 {
+		q = fmt.Sprintf(
+			`UPDATE events
+			SET status = %d, type = %d, device = '%s', name = '%s', created = %d, updated = %d
+			WHERE id = %d`, e.Status, e.Type, e.Device, e.Name, e.Created, e.Updated, e.SqlID)
+	}
+
+	_, err := data.DB.Exec(q)
 
 	if err != nil {
 		data.Logger.Errorf("ошибка сохранения неотправленного события: %s", err.Error())
