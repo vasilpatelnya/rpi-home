@@ -10,25 +10,34 @@ services:
     ports:
       - "3000:3000"
     links:
-      - mongodb
+      - mongodb_rpi
     restart: always
     depends_on:
-      - mongodb
+      - mongodb_rpi
     volumes:
       - ./config/docker.json:/app/config/docker.json
       - /var/lib/motioneye:/var/lib/motioneye
       - ./backup:/app/backup
 
-  mongodb:
+  mongodb_rpi:
     container_name: "rpihome_mongodb"
-    image: nonoroazoro/rpi-mongo
+    image: mongo:4.0
     restart: always
     ports:
       - "27018:27017"
     volumes:
       - ./docker/volume/mongodb:/data/db
       - ./docker/mongodb/.ash_history:/root/.ash_history:ro
-    
+
+  sqlite3_rpi:
+    container_name: "rpihome_sqlite3"
+    image: nouchka/sqlite3:latest
+    restart: always
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./db/:/root/db/
+
   motioneye:
     container_name: "rpihome_motioneye"
     image: "ccrisan/motioneye:master-armhf"

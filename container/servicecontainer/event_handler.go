@@ -21,8 +21,8 @@ const (
 
 // todo переделать на аргумент с несколькими путями к записям: например для нескольких камер
 func (sc *ServiceContainer) EventHandle() {
-	sc.handleEvents(model.StatusNew, sc.AppConfig.Motion.MoviesDirCam1, "/app/backup")
 	sc.handleEvents(model.StatusFail, sc.AppConfig.Motion.MoviesDirCam1, "/app/backup")
+	sc.handleEvents(model.StatusNew, sc.AppConfig.Motion.MoviesDirCam1, "/app/backup")
 }
 
 func (sc *ServiceContainer) handleEvents(status int, moviesPath, backupPath string) {

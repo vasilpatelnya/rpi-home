@@ -10,7 +10,7 @@ import (
 )
 
 func TestAssertCreateMongoConnection(t *testing.T) {
-	container, err := testhelpers.GetTestContainer(rootPath + configPath)
+	container, err := testhelpers.GetTestContainer()
 	assert.Nil(t, err)
 	connectionSettings := container.AppConfig.Databases.MongoConnectionSettings
 

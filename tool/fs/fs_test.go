@@ -35,3 +35,9 @@ func TestCopyFile(t *testing.T) {
 	dst := testhelpers.GetTestDataDir() + "/test_copy.mp4"
 	assert.Nil(t, fs.CopyFile(newFilePath, dst))
 }
+
+func TestRootPath(t *testing.T) {
+	path, err := fs.RootPath()
+	assert.Nil(t, err)
+	assert.NotEqual(t, "", path)
+}

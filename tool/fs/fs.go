@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path"
+	"runtime"
 	"time"
 )
 
@@ -57,4 +59,10 @@ func CopyFile(src, dst string) error {
 	}
 
 	return nil
+}
+
+func RootPath() (string, error) {
+	_, thisFilename, _, _ := runtime.Caller(0)
+
+	return path.Dir(thisFilename) + "/../..", nil
 }

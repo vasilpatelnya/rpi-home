@@ -21,7 +21,7 @@
       "time_between_attempts": 20
     },
     "sqlite3": {
-      "db_path": "testdata/sqlite3.db",
+      "db_path": "/testdata/sqlite3.db",
       "connect_attempts": 10,
       "time_between_attempts": 20
     }

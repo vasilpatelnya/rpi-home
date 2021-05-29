@@ -1,0 +1,61 @@
+package sqlite3
+
+import (
+	"fmt"
+	"github.com/sirupsen/logrus"
+	"github.com/vasilpatelnya/rpi-home/model"
+	"time"
+
+	"database/sql"
+	_ "github.com/mattn/go-sqlite3"
+)
+
+type EventDataSQLite3 struct {
+	DB     *sql.DB
+	Logger *logrus.Logger
+}
+
+func (data *EventDataSQLite3) GetAllByStatus(s int) ([]model.Event, error) {
+	var events []model.Event
+
+	rows, err := data.DB.Query("select * from events")
+	if err != nil {
+		panic(err)
+	}
+	defer func() { _ = rows.Close() }()
+
+	for rows.Next() {
+		p := model.Event{}
+		err = rows.Scan(&p.ID, &p.Status, &p.Type, &p.Device, &p.Name, &p.Updated, &p.Created)
+		if err != nil {
+			data.Logger.Errorf("Ошибка при получении событий по статусу '%d': %s", s, err.Error())
+
+			return nil, err
+		}
+		events = append(events, p)
+	}
+
+	return events, nil
+}
+
+func (data *EventDataSQLite3) Save(e *model.Event) error {
+	q := fmt.Sprintf(
+		"INSERT INTO events (id, status, type, device, name, updated, created) VALUES('steven', 32) ON CONFLICT(id) DO UPDATE SET age=excluded.age",
+	)
+	_, err := data.DB.Query(q)
+
+	if err != nil {
+		data.Logger.Errorf("ошибка сохранения неотправленного события: %s", err.Error())
+
+		return err
+	}
+
+	return nil
+}
+
+func (data *EventDataSQLite3) SaveUpdated(e *model.Event, status int) error {
+	e.Status = status
+	e.Updated = time.Now().UnixNano()
+
+	return data.Save(e)
+}

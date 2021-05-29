@@ -10,11 +10,11 @@ import (
 )
 
 // GetTestContainer ...
-func GetTestContainer(filename string) (*servicecontainer.ServiceContainer, error) {
+func GetTestContainer() (*servicecontainer.ServiceContainer, error) {
 	appConfig := config.Config{}
 	c := servicecontainer.ServiceContainer{AppConfig: &appConfig}
 
-	err := c.InitApp(filename)
+	err := c.InitApp()
 	if err != nil {
 		return nil, errors.Wrap(err, "create test container")
 	}

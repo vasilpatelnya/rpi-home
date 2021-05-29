@@ -3,11 +3,13 @@ package servicecontainer
 import (
 	"fmt"
 	"github.com/vasilpatelnya/rpi-home/dataservice"
+	"github.com/vasilpatelnya/rpi-home/dataservice/event_data/mongodb"
+	"github.com/vasilpatelnya/rpi-home/dataservice/event_data/sqlite3"
 	"github.com/vasilpatelnya/rpi-home/model"
+	"github.com/vasilpatelnya/rpi-home/tool/fs"
 	"github.com/vasilpatelnya/rpi-home/tool/jsontool"
 	"log"
 	"net/http"
-	"runtime"
 	"time"
 
 	"github.com/pkg/errors"
@@ -16,7 +18,6 @@ import (
 	"github.com/vasilpatelnya/rpi-home/container/notification"
 	"github.com/vasilpatelnya/rpi-home/container/notification/telegram"
 	sentryhelper "github.com/vasilpatelnya/rpi-home/container/sentry-helper"
-	"github.com/vasilpatelnya/rpi-home/dataservice/event_data/mongodb"
 )
 
 // ServiceContainer ...
@@ -29,12 +30,19 @@ type ServiceContainer struct {
 }
 
 // InitApp initializes container config in the specified path.
-func (sc *ServiceContainer) InitApp(filename string) error {
-	c, err := config.New(filename)
+func (sc *ServiceContainer) InitApp() error {
+	envMode, err := config.ParseEnvMode()
+	if err != nil {
+		log.Fatalf("Parse environment mode error: %s", err.Error())
+	}
+	rootPath, err := fs.RootPath()
+	if err != nil {
+		log.Fatalf("Root path not founded, error: %s", err.Error())
+	}
+	sc.AppConfig, err = config.New(fmt.Sprintf("%s/config/%s.json", rootPath, envMode))
 	if err != nil {
 		return errors.Wrap(err, "Ошибка при загрузке конфигурационного файла:")
 	}
-	sc.AppConfig = c
 	sc.DB = sc.AppConfig.AssertCreateConnectionContainer()
 	err = sc.InitLogger()
 	if err != nil {
@@ -44,9 +52,6 @@ func (sc *ServiceContainer) InitApp(filename string) error {
 	if err != nil {
 		return errors.Wrap(err, "Ошибка при инициализации модуля отправки уведомлений")
 	}
-
-	_, thisFilename, _, _ := runtime.Caller(0)
-	sc.Logger.Infof("Path servicecontainer.go: %s", thisFilename)
 
 	go sc.InitApiServer()
 
@@ -94,7 +99,7 @@ func (sc *ServiceContainer) InitApiServer() {
 			return
 		}
 
-		log.Printf("Request successfully decoded: device '%s', type '%d'", request.Device, request.Type)
+		log.Printf("Request successfully decoded: device '%s', type '%d'\n", request.Device, request.Type)
 
 		event := model.New()
 		event.Device = request.Device
@@ -152,14 +157,32 @@ func (sc *ServiceContainer) Run() {
 
 	sentryhelper.Start(sc.Logger, sc.AppConfig.SentrySettings.SentryUrl)
 
+	sc.Repo = getRepo(sc.DB.SQLite3, sc.Logger)
+
 	for {
 		select {
 		case <-mainTicker.C:
-			sc.Repo = &mongodb.EventDataMongo{
-				EventsCollection: sc.DB.Mongo.C("events"), // todo to cfg
-				Logger:           sc.Logger,
-			}
 			sc.EventHandle()
 		}
+	}
+}
+
+func getRepo(connection interface{}, logger *logrus.Logger) dataservice.EventData {
+	mongoConnection, isMongoConnection := connection.(config.MongoConnection)
+	sqlite3Connection, isSQLite3Connection := connection.(config.SQLite3Connection)
+	switch {
+	case isMongoConnection:
+		return &mongodb.EventDataMongo{
+			EventsCollection: mongoConnection.C("events"), // todo to cfg
+			Logger:           logger,
+		}
+	case isSQLite3Connection:
+		_, db := sqlite3Connection.C()
+		return &sqlite3.EventDataSQLite3{
+			DB:     db,
+			Logger: logger,
+		}
+	default:
+		return nil
 	}
 }
