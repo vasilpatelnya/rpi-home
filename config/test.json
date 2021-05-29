@@ -15,13 +15,13 @@
   },
   "databases": {
     "mongo": {
-      "uri": "mongodb://127.0.0.1:27018/RpiHome?authSource=admin",
+      "uri": "mongodb://127.0.0.1:27017/RpiHome?authSource=admin",
       "db": "RpiHome",
       "connect_attempts": 10,
       "time_between_attempts": 20
     },
     "sqlite3": {
-      "db_path": "testdata/sqlite3.db",
+      "db_path": "testdata/sqlite3_test.db",
       "connect_attempts": 10,
       "time_between_attempts": 20
     }

@@ -2,6 +2,7 @@ language: go
 
 env:
   - GO111MODULE=on
+  - ENVIRONMENT=test
 
 go:
   - 1.14.4
