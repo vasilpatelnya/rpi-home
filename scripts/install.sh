@@ -11,11 +11,12 @@ apt-get -yqq update
 apt-get -yqq dist-upgrade
 echo -e "${GREEN}finish updating${NORMAL}"
 
-# Устанавливаем docker docker-compose
+# Устанавливаем docker и docker-compose
 
 curl -fsSL https://get.docker.com -o get-docker.sh
 sh get-docker.sh
 sudo usermod -aG docker $USER
+rm get-docker.sh
 
 sudo apt install -y libffi-dev libssl-dev python3-dev
 sudo apt install -y python3 python3-pip
