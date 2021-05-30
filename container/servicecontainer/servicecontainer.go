@@ -43,7 +43,7 @@ func (sc *ServiceContainer) InitApp() error {
 	if err != nil {
 		return errors.Wrap(err, "Ошибка при загрузке конфигурационного файла:")
 	}
-	sc.DB = dataservice.AssertCreateConnectionContainer(sc.AppConfig.Databases.SQLite3ConnectionSettings)
+	sc.DB = dataservice.AssertCreateConnectionContainer(sc.AppConfig.Database)
 	err = sc.InitLogger()
 	if err != nil {
 		return errors.Wrap(err, "Ошибка при инициализации логгера")

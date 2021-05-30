@@ -13,8 +13,9 @@
   "periods": {
     "main_ticker_time": 1000
   },
-  "databases": {
-    "mongo": {
+  "database": {
+    "type": "mongo",
+    "settings": {
       "uri": "mongodb://127.0.0.1:27018/RpiHome?authSource=admin",
       "db": "RpiHome",
       "connect_attempts": 10,

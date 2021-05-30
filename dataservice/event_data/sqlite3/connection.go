@@ -18,7 +18,7 @@ type SQLite3Connection struct {
 }
 
 // AssertCreateSQLite3Connection ...
-func AssertCreateSQLite3Connection(settings *config.SQLite3ConnectionSettings) *SQLite3Connection {
+func AssertCreateSQLite3Connection(settings *config.SQLite3Settings) *SQLite3Connection {
 	log.Println("Устанавливаем соединение с SQLite 3...")
 
 	connection, err := CreateSQLite3Connection(settings)
@@ -37,13 +37,13 @@ func (db *SQLite3Connection) C() (*sql.Conn, *sql.DB) {
 }
 
 // CreateSQLite3Connection ...
-func CreateSQLite3Connection(settings *config.SQLite3ConnectionSettings) (*SQLite3Connection, error) {
+func CreateSQLite3Connection(c *config.SQLite3Settings) (*SQLite3Connection, error) {
 	rootPath, err := fs.RootPath()
 	if err != nil {
 		return nil, err
 	}
 
-	db, err := sql.Open("sqlite3", fmt.Sprintf("%s/%s", rootPath, settings.DBPath))
+	db, err := sql.Open("sqlite3", fmt.Sprintf("%s/%s", rootPath, c.Settings.DBPath))
 
 	if err != nil {
 		return nil, err
@@ -53,12 +53,12 @@ func CreateSQLite3Connection(settings *config.SQLite3ConnectionSettings) (*SQLit
 	if err != nil {
 		return nil, err
 	}
-	go sqlite3Ping(db, settings)
+	go sqlite3Ping(db, c)
 
 	return &SQLite3Connection{connection: connection, db: db}, nil
 }
 
-func sqlite3Ping(sqlite3 *sql.DB, settings *config.SQLite3ConnectionSettings) {
+func sqlite3Ping(sqlite3 *sql.DB, c *config.SQLite3Settings) {
 	errNum := 0
 
 	for {
@@ -67,10 +67,10 @@ func sqlite3Ping(sqlite3 *sql.DB, settings *config.SQLite3ConnectionSettings) {
 			errNum++
 		}
 
-		if errNum > settings.ConnectAttempts {
+		if errNum > c.Settings.ConnectAttempts {
 			log.Fatal("Превышено количество попыток подключения к SQLite3. Завершение работы.")
 		}
 
-		time.Sleep(time.Second * settings.TimeBetweenAttempts)
+		time.Sleep(time.Second * c.Settings.TimeBetweenAttempts)
 	}
 }

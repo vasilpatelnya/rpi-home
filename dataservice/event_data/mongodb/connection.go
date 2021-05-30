@@ -11,11 +11,11 @@ import (
 // MongoConnection ...
 type MongoConnection struct {
 	session *mgo.Session
-	setting *config.MongoConnectionSettings
+	setting *config.MongoSettings
 }
 
 // CreateMongoConnection ...
-func CreateMongoConnection(settings *config.MongoConnectionSettings) (*MongoConnection, error) {
+func CreateMongoConnection(settings *config.MongoSettings) (*MongoConnection, error) {
 	session, err := mgo.Dial(settings.URI)
 
 	if err != nil {
@@ -32,7 +32,7 @@ func CreateMongoConnection(settings *config.MongoConnectionSettings) (*MongoConn
 }
 
 // AssertCreateMongoConnection ...
-func AssertCreateMongoConnection(settings *config.MongoConnectionSettings) *MongoConnection {
+func AssertCreateMongoConnection(settings *config.MongoSettings) *MongoConnection {
 	log.Println("Устанавливаем соединение с Mongo DB...")
 
 	connection, err := CreateMongoConnection(settings)
@@ -45,7 +45,7 @@ func AssertCreateMongoConnection(settings *config.MongoConnectionSettings) *Mong
 	return connection
 }
 
-func mongoPing(mg *mgo.Database, settings *config.MongoConnectionSettings) {
+func mongoPing(mg *mgo.Database, settings *config.MongoSettings) {
 	errNum := 0
 
 	for {

@@ -13,23 +13,13 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-const (
-	EnvironmentDefault     = "default"
-	EnvironmentProduction  = "production"
-	EnvironmentTest        = "test"
-	EnvironmentDevelopment = "development"
-	EnvironmentLocal       = "local"
-
-	AppSettingsEnvName = "ENVIRONMENT"
-)
-
 var AppLevels = []string{EnvironmentDefault, EnvironmentProduction, EnvironmentTest, EnvironmentDevelopment, EnvironmentLocal}
 
 // Config ...
 type Config struct {
 	Motion         MotionSettings   `json:"motion"`
 	Periods        Periods          `json:"periods"`
-	Databases      DbSettingsStruct `json:"databases"`
+	Database       DbSettingsStruct `json:"database"`
 	Logger         Logger           `json:"logger"`
 	SentrySettings SentrySettings   `json:"sentry_settings"`
 	Notifier       Notifier         `json:"notifier"`
@@ -46,16 +36,27 @@ type Periods struct {
 
 // DbSettingsStruct ...
 type DbSettingsStruct struct {
-	MongoConnectionSettings   MongoConnectionSettings   `json:"mongo"`
-	SQLite3ConnectionSettings SQLite3ConnectionSettings `json:"sqlite3"`
+	Type     string      `json:"type"`
+	Settings interface{} `json:"settings"`
 }
 
-// MongoConnectionSettings ...
+// MongoSettings ...
+type MongoSettings struct {
+	Type     string                  `json:"type"`
+	Settings MongoConnectionSettings `json:"settings"`
+}
+
 type MongoConnectionSettings struct {
 	URI                 string        `json:"uri"`
 	DB                  string        `json:"db"`
 	ConnectAttempts     int           `json:"connect_attempts"`
 	TimeBetweenAttempts time.Duration `json:"time_between_attempts"`
+}
+
+// SQLite3Settings ...
+type SQLite3Settings struct {
+	Type     string                    `json:"type"`
+	Settings SQLite3ConnectionSettings `json:"settings"`
 }
 
 // SQLite3ConnectionSettings ...

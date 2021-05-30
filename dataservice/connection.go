@@ -16,8 +16,8 @@ type ConnectionContainer struct {
 func AssertCreateConnectionContainer(settings interface{}) *ConnectionContainer {
 	var mongoConnection *mongodb.MongoConnection
 	var sqlite3Connection *sqlite3.SQLite3Connection
-	mongoSettings, isMongoSettings := settings.(*config.MongoConnectionSettings)
-	sqlite3Settings, isSQLite3Settings := settings.(*config.SQLite3ConnectionSettings)
+	mongoSettings, isMongoSettings := settings.(*config.MongoSettings)
+	sqlite3Settings, isSQLite3Settings := settings.(*config.SQLite3Settings)
 	if isMongoSettings && mongoSettings != nil {
 		mongoConnection = mongodb.AssertCreateMongoConnection(mongoSettings)
 	}

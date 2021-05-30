@@ -12,7 +12,7 @@ import (
 func TestAssertCreateMongoConnection(t *testing.T) {
 	container, err := testhelpers.GetTestContainer()
 	assert.Nil(t, err)
-	connectionSettings := container.AppConfig.Databases.MongoConnectionSettings
+	connectionSettings := container.AppConfig.Database.MongoConnectionSettings
 
 	t.Run("right config, wrong table", func(t *testing.T) {
 		mongoConnection := mongodb.AssertCreateMongoConnection(&connectionSettings)
