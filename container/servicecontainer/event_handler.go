@@ -21,8 +21,12 @@ const (
 
 // todo переделать на аргумент с несколькими путями к записям: например для нескольких камер
 func (sc *ServiceContainer) EventHandle() {
-	sc.handleEvents(model.StatusFail, sc.AppConfig.Motion.MoviesDirCam1, "/app/backup")
-	sc.handleEvents(model.StatusNew, sc.AppConfig.Motion.MoviesDirCam1, "/app/backup")
+	rootPath, err := fs.RootPath()
+	if err != nil {
+		sc.Logger.Errorf("RootPath error: %s", err.Error())
+	}
+	sc.handleEvents(model.StatusFail, sc.AppConfig.Motion.MoviesDirCam1, rootPath+"/backup")
+	sc.handleEvents(model.StatusNew, sc.AppConfig.Motion.MoviesDirCam1, rootPath+"/backup")
 }
 
 func (sc *ServiceContainer) handleEvents(status int, moviesPath, backupPath string) {
@@ -100,7 +104,7 @@ func (sc *ServiceContainer) handleMotionReady(e *model.Event, dirname string, ba
 		if ext == sc.AppConfig.Motion.FileExtension && f.Size() > 0 {
 			if f.Size() < MaxSize {
 				msg := e.GetVideoReadyMessage()
-				dstPath := "/app/backup/" + f.Name() // todo refactor
+				dstPath := backupPath + "/" + f.Name()
 				err = fs.CopyFile(fp, dstPath)
 				if err != nil {
 					sc.Logger.Errorf("Ошибка при попытке скопировать видео \nиз %s \nв %s\n Ошибка: %s", fp, dstPath, err.Error())
