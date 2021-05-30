@@ -10,4 +10,5 @@ FROM alpine:3.12.0
 WORKDIR /app
 COPY --from=builder /app/build/rpihome /app/rpihome
 CMD mkdir backup
-CMD ./rpihome -c config/docker.json
+ENV ENVIRONMENT=docker
+CMD ./rpihome

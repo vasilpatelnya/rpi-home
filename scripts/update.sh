@@ -20,6 +20,8 @@ echo -e "${GREEN}Finish updating app${NORMAL}"
 
 # Компилируем бинарник приложения.
 
-echo -e "${GREEN}Compile app${NORMAL}"
-/usr/local/go/bin/go build -o rpihome -v ./cmd/rpihome/main.go
-echo -e "${GREEN}Finish compiling app${NORMAL}"
+echo -e "${GREEN}Restart app${NORMAL}"
+docker-compose stop
+docker-compose build rpihome
+docker-compose up -d
+echo -e "${GREEN}App started${NORMAL}"
