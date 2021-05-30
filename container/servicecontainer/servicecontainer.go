@@ -8,6 +8,7 @@ import (
 	"github.com/vasilpatelnya/rpi-home/model"
 	"github.com/vasilpatelnya/rpi-home/tool/fs"
 	"github.com/vasilpatelnya/rpi-home/tool/jsontool"
+	"github.com/vasilpatelnya/rpi-home/usecase"
 	"log"
 	"net/http"
 	"time"
@@ -177,10 +178,23 @@ func (sc *ServiceContainer) Run() {
 
 	sentryhelper.Start(sc.Logger, sc.AppConfig.SentrySettings.SentryUrl)
 
+	rootPath, err := fs.RootPath()
+	if err != nil {
+		sc.Logger.Fatalf("root path not founded: %s", err.Error())
+	}
+
 	for {
 		select {
 		case <-mainTicker.C:
-			sc.EventHandle()
+			opts := usecase.EventHandleOpts{
+				TargetDir: sc.AppConfig.Motion.MoviesDirCam1,
+				BackupDir: rootPath + "/backup",
+				Ext:       sc.AppConfig.Motion.FileExtension,
+				Repo:      sc.Repo,
+				Notifier:  sc.Notifier,
+				Logger:    sc.Logger,
+			}
+			usecase.EventHandle(opts)
 		}
 	}
 }
