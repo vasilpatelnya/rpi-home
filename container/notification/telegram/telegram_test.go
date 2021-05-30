@@ -29,6 +29,9 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	if !testConfig.Notifier.IsUsing {
+		os.Exit(0)
+	}
 	os.Exit(m.Run())
 }
 

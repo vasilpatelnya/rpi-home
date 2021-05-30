@@ -43,14 +43,28 @@ func (sc *ServiceContainer) InitApp() error {
 	if err != nil {
 		return errors.Wrap(err, "Ошибка при загрузке конфигурационного файла:")
 	}
-	sc.DB = dataservice.AssertCreateConnectionContainer(sc.AppConfig.Database)
+	sc.DB, err = dataservice.AssertCreateConnectionContainer(sc.AppConfig.Database)
+	if err != nil {
+		return errors.Errorf("Create connection container error: %s", err.Error())
+	}
 	err = sc.InitLogger()
 	if err != nil {
 		return errors.Wrap(err, "Ошибка при инициализации логгера")
 	}
-	err = sc.InitNotifier()
-	if err != nil {
-		return errors.Wrap(err, "Ошибка при инициализации модуля отправки уведомлений")
+	if sc.AppConfig.Notifier.IsUsing {
+		err = sc.InitNotifier()
+		if err != nil {
+			return errors.Wrap(err, "Ошибка при инициализации модуля отправки уведомлений")
+		}
+	}
+
+	switch {
+	case sc.DB.Mongo != nil:
+		sc.Repo = GetRepo(sc.DB.Mongo, sc.Logger)
+	case sc.DB.SQLite3 != nil:
+		sc.Repo = GetRepo(sc.DB.SQLite3, sc.Logger)
+	default:
+		return errors.New("not found db connection")
 	}
 
 	//go sc.InitApiServer()
@@ -162,9 +176,6 @@ func (sc *ServiceContainer) Run() {
 	defer mainTicker.Stop()
 
 	sentryhelper.Start(sc.Logger, sc.AppConfig.SentrySettings.SentryUrl)
-
-	conn, _ := sc.DB.SQLite3.C()
-	sc.Repo = GetRepo(conn, sc.Logger)
 
 	for {
 		select {

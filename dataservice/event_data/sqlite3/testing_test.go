@@ -2,6 +2,7 @@ package sqlite3_test
 
 import (
 	"github.com/stretchr/testify/assert"
+	"github.com/vasilpatelnya/rpi-home/config"
 	"github.com/vasilpatelnya/rpi-home/container/servicecontainer"
 	"github.com/vasilpatelnya/rpi-home/dataservice/event_data/sqlite3"
 	"github.com/vasilpatelnya/rpi-home/model"
@@ -13,6 +14,9 @@ var testContainer servicecontainer.ServiceContainer
 
 func TestMain(m *testing.M) {
 	testContainer = getTestServiceContainer()
+	if testContainer.AppConfig.Database.Type != config.DbTypeSQLite3 {
+		os.Exit(0)
+	}
 	_, db := testContainer.DB.SQLite3.C()
 
 	_, err := db.Exec(`DROP TABLE IF EXISTS 'events';`)
@@ -40,7 +44,6 @@ func getTestServiceContainer() servicecontainer.ServiceContainer {
 	if err != nil {
 		sc.Logger.Fatalf("create test service container: fail. %s", err.Error())
 	}
-	sc.Repo = servicecontainer.GetRepo(sc.DB.SQLite3, sc.Logger)
 
 	return sc
 }

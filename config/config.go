@@ -20,12 +20,12 @@ var AppLevels = []string{
 
 // Config ...
 type Config struct {
-	Motion         MotionSettings   `json:"motion"`
-	Periods        Periods          `json:"periods"`
-	Database       DbSettingsStruct `json:"database"`
-	Logger         Logger           `json:"logger"`
-	Notifier       Notifier         `json:"notifier"`
-	SentrySettings SentrySettings   `json:"sentry_settings"`
+	Motion         MotionSettings `json:"motion"`
+	Periods        Periods        `json:"periods"`
+	Database       DbSettings     `json:"database"`
+	Logger         Logger         `json:"logger"`
+	Notifier       Notifier       `json:"notifier"`
+	SentrySettings SentrySettings `json:"sentry_settings"`
 }
 
 type MotionSettings struct {
@@ -37,19 +37,13 @@ type Periods struct {
 	MainTickerTime time.Duration `json:"main_ticker_time"`
 }
 
-// DbSettingsStruct ...
-type DbSettingsStruct struct {
+type DbSettings struct {
 	Type     string      `json:"type"`
 	Settings interface{} `json:"settings"`
 }
 
 // MongoSettings ...
 type MongoSettings struct {
-	Type     string                  `json:"type"`
-	Settings MongoConnectionSettings `json:"settings"`
-}
-
-type MongoConnectionSettings struct {
 	URI                 string        `json:"uri"`
 	DB                  string        `json:"db"`
 	ConnectAttempts     int           `json:"connect_attempts"`
@@ -58,12 +52,6 @@ type MongoConnectionSettings struct {
 
 // SQLite3Settings ...
 type SQLite3Settings struct {
-	Type     string                    `json:"type"`
-	Settings SQLite3ConnectionSettings `json:"settings"`
-}
-
-// SQLite3ConnectionSettings ...
-type SQLite3ConnectionSettings struct {
 	DBPath              string        `json:"db_path"`
 	ConnectAttempts     int           `json:"connect_attempts"`
 	TimeBetweenAttempts time.Duration `json:"time_between_attempts"`

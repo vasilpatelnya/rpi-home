@@ -10,7 +10,6 @@ func getTestServiceContainer() servicecontainer.ServiceContainer {
 	if err != nil {
 		sc.Logger.Fatalf("create test service container: fail. %s", err.Error())
 	}
-	sc.Repo = servicecontainer.GetRepo(sc.DB.SQLite3, sc.Logger)
 
 	return sc
 }

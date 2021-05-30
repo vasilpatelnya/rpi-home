@@ -16,7 +16,7 @@ type MongoConnection struct {
 
 // CreateMongoConnection ...
 func CreateMongoConnection(c *config.MongoSettings) (*MongoConnection, error) {
-	session, err := mgo.Dial(c.Settings.URI)
+	session, err := mgo.Dial(c.URI)
 
 	if err != nil {
 		return nil, err
@@ -26,7 +26,7 @@ func CreateMongoConnection(c *config.MongoSettings) (*MongoConnection, error) {
 	session.SetSafe(&mgo.Safe{})
 	session.SetSyncTimeout(time.Second * 10)
 
-	go mongoPing(session.DB(c.Settings.DB), c)
+	go mongoPing(session.DB(c.DB), c)
 
 	return &MongoConnection{session, c}, nil
 }
@@ -56,15 +56,15 @@ func mongoPing(mg *mgo.Database, c *config.MongoSettings) {
 			errNum++
 		}
 
-		if errNum > c.Settings.ConnectAttempts {
+		if errNum > c.ConnectAttempts {
 			log.Fatal("Превышено количество попыток подключения к Mongo DB. Завершение работы.")
 		}
 
-		time.Sleep(time.Second * c.Settings.TimeBetweenAttempts)
+		time.Sleep(time.Second * c.TimeBetweenAttempts)
 	}
 }
 
 // C ...
 func (db *MongoConnection) C(name string) *mgo.Collection {
-	return db.session.Clone().DB(db.setting.Settings.DB).C(name)
+	return db.session.Clone().DB(db.setting.DB).C(name)
 }

@@ -43,7 +43,7 @@ func CreateSQLite3Connection(c *config.SQLite3Settings) (*SQLite3Connection, err
 		return nil, err
 	}
 
-	db, err := sql.Open("sqlite3", fmt.Sprintf("%s/%s", rootPath, c.Settings.DBPath))
+	db, err := sql.Open("sqlite3", fmt.Sprintf("%s/%s", rootPath, c.DBPath))
 
 	if err != nil {
 		return nil, err
@@ -67,10 +67,10 @@ func sqlite3Ping(sqlite3 *sql.DB, c *config.SQLite3Settings) {
 			errNum++
 		}
 
-		if errNum > c.Settings.ConnectAttempts {
+		if errNum > c.ConnectAttempts {
 			log.Fatal("Превышено количество попыток подключения к SQLite3. Завершение работы.")
 		}
 
-		time.Sleep(time.Second * c.Settings.TimeBetweenAttempts)
+		time.Sleep(time.Second * c.TimeBetweenAttempts)
 	}
 }

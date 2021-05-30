@@ -15,14 +15,8 @@
     "main_ticker_time": 1000
   },
   "database": {
-    "type": "mongo",
+    "type": "sqlite3",
     "settings": {
-      "uri": "mongodb://127.0.0.1:27018/RpiHome?authSource=admin",
-      "db": "RpiHome",
-      "connect_attempts": 10,
-      "time_between_attempts": 20
-    },
-    "sqlite3": {
       "db_path": "/testdata/sqlite3.db",
       "connect_attempts": 10,
       "time_between_attempts": 20
