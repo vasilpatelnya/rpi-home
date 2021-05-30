@@ -68,7 +68,7 @@ func (sc *ServiceContainer) InitApp() error {
 		return errors.New("not found db connection")
 	}
 
-	//go sc.InitApiServer()
+	//go sc.InitApiServer() // todo add chan for manipulations
 
 	return nil
 }
