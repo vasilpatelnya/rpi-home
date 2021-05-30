@@ -6,9 +6,6 @@ env:
 arch:
   - amd64
   - arm64
-os:
-  - linux
-  - linux
 
 go:
   - 1.15
