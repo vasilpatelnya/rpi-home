@@ -4,6 +4,7 @@
     "file_extension": ".mp4"
   },
   "notifier": {
+    "is_using": false,
     "type": "telegram",
     "options": {
       "chat_id": "153510910",

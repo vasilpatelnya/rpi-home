@@ -11,4 +11,6 @@ const (
 
 	DbTypeMongo   = "mongo"
 	DbTypeSQLite3 = "sqlite3"
+
+	NotifierTypeTelegram = "telegram"
 )

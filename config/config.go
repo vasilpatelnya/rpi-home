@@ -13,7 +13,10 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-var AppLevels = []string{EnvironmentDefault, EnvironmentProduction, EnvironmentTest, EnvironmentDevelopment, EnvironmentLocal}
+var AppLevels = []string{
+	EnvironmentDefault, EnvironmentProduction, EnvironmentTest,
+	EnvironmentDevelopment, EnvironmentLocal,
+}
 
 // Config ...
 type Config struct {
@@ -21,8 +24,8 @@ type Config struct {
 	Periods        Periods          `json:"periods"`
 	Database       DbSettingsStruct `json:"database"`
 	Logger         Logger           `json:"logger"`
-	SentrySettings SentrySettings   `json:"sentry_settings"`
 	Notifier       Notifier         `json:"notifier"`
+	SentrySettings SentrySettings   `json:"sentry_settings"`
 }
 
 type MotionSettings struct {
@@ -76,6 +79,7 @@ type SentrySettings struct {
 }
 
 type Notifier struct {
+	IsUsing bool            `json:"is_using"`
 	Type    string          `json:"type"`
 	Options NotifierOptions `json:"options"`
 }

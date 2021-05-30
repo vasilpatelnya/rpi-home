@@ -1,6 +1,7 @@
 package config_test
 
 import (
+	"github.com/vasilpatelnya/rpi-home/config"
 	"github.com/vasilpatelnya/rpi-home/dataservice/event_data/mongodb"
 	"testing"
 
@@ -12,7 +13,11 @@ import (
 func TestAssertCreateMongoConnection(t *testing.T) {
 	container, err := testhelpers.GetTestContainer()
 	assert.Nil(t, err)
-	connectionSettings := container.AppConfig.Database.MongoConnectionSettings
+	connectionSettings, isMongoSettings := container.AppConfig.Database.Settings.(config.MongoSettings)
+
+	if !isMongoSettings {
+		t.Skip("config not contain mongo settings")
+	}
 
 	t.Run("right config, wrong table", func(t *testing.T) {
 		mongoConnection := mongodb.AssertCreateMongoConnection(&connectionSettings)
