@@ -2,8 +2,8 @@ package sqlite3_test
 
 import (
 	"github.com/stretchr/testify/assert"
-	"github.com/vasilpatelnya/rpi-home/config"
 	"github.com/vasilpatelnya/rpi-home/container/servicecontainer"
+	"github.com/vasilpatelnya/rpi-home/dataservice/event_data/sqlite3"
 	"github.com/vasilpatelnya/rpi-home/model"
 	"os"
 	"testing"
@@ -45,7 +45,7 @@ func getTestServiceContainer() servicecontainer.ServiceContainer {
 	return sc
 }
 
-func getAllEvents(t *testing.T, conn *config.SQLite3Connection) []model.Event {
+func getAllEvents(t *testing.T, conn *sqlite3.SQLite3Connection) []model.Event {
 	_, db := conn.C()
 	rows, err := db.Query("SELECT * FROM events WHERE id = 1")
 	assert.Nil(t, err)
@@ -62,7 +62,7 @@ func getAllEvents(t *testing.T, conn *config.SQLite3Connection) []model.Event {
 	return events
 }
 
-func clearTable(t *testing.T, conn *config.SQLite3Connection, table string) {
+func clearTable(t *testing.T, conn *sqlite3.SQLite3Connection, table string) {
 	_, db := conn.C()
 	_, err := db.Exec(`DELETE FROM ` + table)
 	assert.Nil(t, err)

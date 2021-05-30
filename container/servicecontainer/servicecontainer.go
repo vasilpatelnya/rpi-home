@@ -23,7 +23,7 @@ import (
 // ServiceContainer ...
 type ServiceContainer struct {
 	AppConfig *config.Config
-	DB        *config.ConnectionContainer
+	DB        *dataservice.ConnectionContainer
 	Logger    *logrus.Logger
 	Notifier  notification.Notifier
 	Repo      dataservice.EventData
@@ -43,7 +43,7 @@ func (sc *ServiceContainer) InitApp() error {
 	if err != nil {
 		return errors.Wrap(err, "Ошибка при загрузке конфигурационного файла:")
 	}
-	sc.DB = sc.AppConfig.AssertCreateConnectionContainer()
+	sc.DB = dataservice.AssertCreateConnectionContainer(sc.AppConfig.Databases.SQLite3ConnectionSettings)
 	err = sc.InitLogger()
 	if err != nil {
 		return errors.Wrap(err, "Ошибка при инициализации логгера")
@@ -175,8 +175,8 @@ func (sc *ServiceContainer) Run() {
 }
 
 func GetRepo(connection interface{}, logger *logrus.Logger) dataservice.EventData {
-	mongoConnection, isMongoConnection := connection.(config.MongoConnection)
-	sqlite3Connection, isSQLite3Connection := connection.(*config.SQLite3Connection)
+	mongoConnection, isMongoConnection := connection.(*mongodb.MongoConnection)
+	sqlite3Connection, isSQLite3Connection := connection.(*sqlite3.SQLite3Connection)
 	switch {
 	case isMongoConnection:
 		return &mongodb.EventDataMongo{

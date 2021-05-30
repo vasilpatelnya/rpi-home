@@ -1,12 +1,9 @@
 package config
 
 import (
-	"context"
-	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/vasilpatelnya/rpi-home/tool/fs"
 	"io/ioutil"
 	"log"
 	"os"
@@ -14,7 +11,6 @@ import (
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
-	"gopkg.in/mgo.v2"
 )
 
 const (
@@ -67,24 +63,6 @@ type SQLite3ConnectionSettings struct {
 	DBPath              string        `json:"db_path"`
 	ConnectAttempts     int           `json:"connect_attempts"`
 	TimeBetweenAttempts time.Duration `json:"time_between_attempts"`
-}
-
-// MongoConnection ...
-type MongoConnection struct {
-	session *mgo.Session
-	setting MongoConnectionSettings
-}
-
-// SQLite3Connection ...
-type SQLite3Connection struct {
-	db         *sql.DB
-	connection *sql.Conn
-}
-
-// ConnectionContainer ...
-type ConnectionContainer struct {
-	Mongo   *MongoConnection
-	SQLite3 *SQLite3Connection
 }
 
 type Logger struct {
@@ -141,16 +119,6 @@ func ParseEnvMode() (string, error) {
 	return env, nil
 }
 
-// C ...
-func (db *MongoConnection) C(name string) *mgo.Collection {
-	return db.session.Clone().DB(db.setting.DB).C(name)
-}
-
-// C ...
-func (db *SQLite3Connection) C() (*sql.Conn, *sql.DB) {
-	return db.connection, db.db
-}
-
 func loadSettingsFromFile(path string) (*Config, error) {
 	settingsJSON, err := readSettingsFile(path)
 
@@ -178,115 +146,4 @@ func parseSettingsData(settingsJSON []byte) (*Config, error) {
 	}
 
 	return &settings, nil
-}
-
-// AssertCreateConnectionContainer ...
-func (c *Config) AssertCreateConnectionContainer() *ConnectionContainer {
-	mongoConnection := AssertCreateMongoConnection(c.Databases.MongoConnectionSettings)
-	sqlite3Connection := AssertCreateSQLite3Connection(c.Databases.SQLite3ConnectionSettings)
-
-	return &ConnectionContainer{Mongo: mongoConnection, SQLite3: sqlite3Connection}
-}
-
-// CreateMongoConnection ...
-func CreateMongoConnection(settings MongoConnectionSettings) (*MongoConnection, error) {
-	session, err := mgo.Dial(settings.URI)
-
-	if err != nil {
-		return nil, err
-	}
-
-	session.SetMode(mgo.Monotonic, true)
-	session.SetSafe(&mgo.Safe{})
-	session.SetSyncTimeout(time.Second * 10)
-
-	go mongoPing(session.DB(settings.DB), settings)
-
-	return &MongoConnection{session, settings}, nil
-}
-
-// CreateSQLite3Connection ...
-func CreateSQLite3Connection(settings SQLite3ConnectionSettings) (*SQLite3Connection, error) {
-	rootPath, err := fs.RootPath()
-	if err != nil {
-		return nil, err
-	}
-
-	db, err := sql.Open("sqlite3", fmt.Sprintf("%s/%s", rootPath, settings.DBPath))
-
-	if err != nil {
-		return nil, err
-	}
-
-	connection, err := db.Conn(context.Background())
-	if err != nil {
-		return nil, err
-	}
-	go sqlite3Ping(db, settings)
-
-	return &SQLite3Connection{connection: connection, db: db}, nil
-}
-
-// AssertCreateMongoConnection ...
-func AssertCreateMongoConnection(settings MongoConnectionSettings) *MongoConnection {
-	log.Println("Устанавливаем соединение с Mongo DB...")
-
-	connection, err := CreateMongoConnection(settings)
-
-	if err != nil {
-		log.Println("Ошибка при создании подключения к БД.", err)
-		os.Exit(1)
-	}
-
-	return connection
-}
-
-func mongoPing(mg *mgo.Database, settings MongoConnectionSettings) {
-	errNum := 0
-
-	for {
-		err := mg.Session.Ping()
-		if err != nil {
-			mg.Session.Refresh()
-
-			errNum++
-		}
-
-		if errNum > settings.ConnectAttempts {
-			log.Fatal("Превышено количество попыток подключения к Mongo DB. Завершение работы.")
-		}
-
-		time.Sleep(time.Second * settings.TimeBetweenAttempts)
-	}
-}
-
-func sqlite3Ping(sqlite3 *sql.DB, settings SQLite3ConnectionSettings) {
-	errNum := 0
-
-	for {
-		err := sqlite3.Ping()
-		if err != nil {
-			errNum++
-		}
-
-		if errNum > settings.ConnectAttempts {
-			log.Fatal("Превышено количество попыток подключения к SQLite3. Завершение работы.")
-		}
-
-		time.Sleep(time.Second * settings.TimeBetweenAttempts)
-	}
-}
-
-// AssertCreateSQLite3Connection ...
-func AssertCreateSQLite3Connection(settings SQLite3ConnectionSettings) *SQLite3Connection {
-	log.Println("Устанавливаем соединение с SQLite 3...")
-
-	connection, err := CreateSQLite3Connection(settings)
-
-	if err != nil {
-		log.Println("Ошибка при создании подключения к БД.", err)
-		os.Exit(1)
-	}
-
-	return connection
 }

@@ -1,10 +1,10 @@
 package config_test
 
 import (
+	"github.com/vasilpatelnya/rpi-home/dataservice/event_data/mongodb"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/vasilpatelnya/rpi-home/config"
 	"github.com/vasilpatelnya/rpi-home/tool/testhelpers"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -15,7 +15,7 @@ func TestAssertCreateMongoConnection(t *testing.T) {
 	connectionSettings := container.AppConfig.Databases.MongoConnectionSettings
 
 	t.Run("right config, wrong table", func(t *testing.T) {
-		mongoConnection := config.AssertCreateMongoConnection(connectionSettings)
+		mongoConnection := mongodb.AssertCreateMongoConnection(&connectionSettings)
 		var empty interface{}
 		err = mongoConnection.C("random").Find(bson.M{}).One(&empty)
 		assert.NotNil(t, err)
