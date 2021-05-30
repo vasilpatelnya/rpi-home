@@ -29,15 +29,6 @@ services:
       - ./docker/volume/mongodb:/data/db
       - ./docker/mongodb/.ash_history:/root/.ash_history:ro
 
-  sqlite3_rpi:
-    container_name: "rpihome_sqlite3"
-    image: nouchka/sqlite3:latest
-    restart: always
-    stdin_open: true
-    tty: true
-    volumes:
-      - ./db/:/root/db/
-
   motioneye:
     container_name: "rpihome_motioneye"
     image: "ccrisan/motioneye:master-armhf"
