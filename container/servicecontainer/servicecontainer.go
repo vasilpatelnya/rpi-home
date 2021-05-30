@@ -127,7 +127,7 @@ func (sc *ServiceContainer) InitApiServer() {
 		event.Created = time.Now().UnixNano()
 		event.Updated = time.Now().UnixNano()
 
-		err := sc.DB.Mongo.C("events").Insert(event) // todo to cfg
+		err := sc.Repo.Save(event)
 		if err != nil {
 			log.Fatal(err)
 		}
