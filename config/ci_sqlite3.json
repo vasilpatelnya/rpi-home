@@ -4,7 +4,7 @@
     "file_extension": ".mp4"
   },
   "notifier": {
-    "is_using": false,
+    "is_using": true,
     "type": "telegram",
     "options": {
       "chat_id": "153510910",
@@ -17,7 +17,7 @@
   "database": {
     "type": "sqlite3",
     "settings": {
-      "db_path": "/testdata/sqlite3_test.db",
+      "db_path": "/testdata/sqlite3.db",
       "connect_attempts": 10,
       "time_between_attempts": 20
     }

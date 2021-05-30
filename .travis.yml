@@ -2,6 +2,8 @@ language: go
 
 env:
   - GO111MODULE=on ENVIRONMENT=test
+  - GO111MODULE=on ENVIRONMENT=ci_mongo
+  - GO111MODULE=on ENVIRONMENT=ci_sqlite3
 
 arch:
   - amd64

@@ -15,7 +15,7 @@ services:
     depends_on:
       - mongodb_rpi
     volumes:
-      - ./config/docker.json:/app/config/docker.json
+      - ./config:/app/config
       - /var/lib/motioneye:/var/lib/motioneye
       - ./backup:/app/backup
 

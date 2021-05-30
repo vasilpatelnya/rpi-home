@@ -6,6 +6,8 @@ const (
 	EnvironmentTest        = "test"
 	EnvironmentDevelopment = "development"
 	EnvironmentLocal       = "local"
+	EnvironmentCiMongo     = "ci_mongo"
+	EnvironmentCiSQLites3  = "ci_sqlite3"
 
 	AppSettingsEnvName = "ENVIRONMENT"
 

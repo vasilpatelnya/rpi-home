@@ -4,7 +4,7 @@
     "file_extension": ".mp4"
   },
   "notifier": {
-    "is_using": false,
+    "is_using": true,
     "type": "telegram",
     "options": {
       "chat_id": "153510910",
@@ -15,9 +15,10 @@
     "main_ticker_time": 1000
   },
   "database": {
-    "type": "sqlite3",
+    "type": "mongo",
     "settings": {
-      "db_path": "/testdata/sqlite3_test.db",
+      "uri": "mongodb://127.0.0.1:27018/RpiHome?authSource=admin",
+      "db": "RpiHome",
       "connect_attempts": 10,
       "time_between_attempts": 20
     }

@@ -20,6 +20,7 @@ func TestAssertCreateMongoConnection(t *testing.T) {
 	}
 
 	t.Run("right config, wrong table", func(t *testing.T) {
+		// todo refactor this shit
 		mongoConnection := mongodb.AssertCreateMongoConnection(&config.MongoSettings{
 			URI:                 "mongodb://127.0.0.1:27018/RpiHome?authSource=admin",
 			DB:                  "RpiHome",
