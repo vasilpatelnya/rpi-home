@@ -13,7 +13,7 @@ services:
       - mongodb_rpi
     environment:
       - ENVIRONMENT=default
-      - RPIHOME_ROOTPATH=/app/build
+      - RPIHOME_ROOTPATH=/app/rpihome
     restart: always
     depends_on:
       - mongodb_rpi
