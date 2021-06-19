@@ -62,7 +62,10 @@ func CopyFile(src, dst string) error {
 }
 
 func RootPath() (string, error) {
-	_, thisFilename, _, _ := runtime.Caller(0)
+	p := os.Getenv("RPIHOME_ROOTPATH")
+	if p == "" {
+		return "", errors.New("root path not defined!")
+	}
 
-	return path.Dir(thisFilename) + "/../..", nil
+	return p, nil
 }
