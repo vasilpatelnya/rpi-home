@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"path"
-	"runtime"
 	"time"
 )
 
