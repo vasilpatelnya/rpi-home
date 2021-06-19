@@ -11,6 +11,8 @@ services:
       - "3000:3000"
     links:
       - mongodb_rpi
+    environment:
+      - ENVIRONMENT=default
     restart: always
     depends_on:
       - mongodb_rpi
@@ -41,8 +43,8 @@ services:
       - /etc/motioneye:/etc/motioneye
       - /var/lib/motioneye:/var/lib/motioneye
       - ./scripts:/etc/scripts
-    devices: 
-      - /dev/video0
+#    devices: 
+#      - /dev/video0
 
 networks:
   default:
