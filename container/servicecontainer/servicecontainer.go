@@ -187,12 +187,13 @@ func (sc *ServiceContainer) Run() {
 		select {
 		case <-mainTicker.C:
 			opts := usecase.EventHandleOpts{
-				TargetDir: sc.AppConfig.Motion.MoviesDirCam1,
-				BackupDir: rootPath + "/backup",
-				Ext:       sc.AppConfig.Motion.FileExtension,
-				Repo:      sc.Repo,
-				Notifier:  sc.Notifier,
-				Logger:    sc.Logger,
+				TargetDir:   sc.AppConfig.Motion.MoviesDirCam1,
+				BackupDir:   rootPath + "/backup",
+				Ext:         sc.AppConfig.Motion.FileExtension,
+				Repo:        sc.Repo,
+				Notifier:    sc.Notifier,
+				Logger:      sc.Logger,
+				UseNotifier: sc.AppConfig.Notifier.IsUsing,
 			}
 			usecase.EventHandle(opts)
 		}

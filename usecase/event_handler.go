@@ -20,12 +20,13 @@ const (
 )
 
 type EventHandleOpts struct {
-	TargetDir string // todo переделать на аргумент с несколькими путями к записям: например для нескольких камер
-	BackupDir string
-	Ext       string
-	Repo      dataservice.EventData
-	Notifier  notification.Notifier
-	Logger    *logrus.Logger
+	TargetDir   string // todo переделать на аргумент с несколькими путями к записям: например для нескольких камер
+	BackupDir   string
+	Ext         string
+	UseNotifier bool
+	Repo        dataservice.EventData
+	Notifier    notification.Notifier
+	Logger      *logrus.Logger
 }
 
 func EventHandle(opts EventHandleOpts) {
@@ -82,6 +83,9 @@ func handleEvents(status int, opts EventHandleOpts) {
 }
 
 func handleMotionAlarm(opts EventHandleOpts, e *model.Event) (int, error) {
+	if !opts.UseNotifier {
+		return model.StatusNotSent, errors.New("отправка уведомлений запрещена")
+	}
 	err := opts.Notifier.SendText(e.GetMotionMessage())
 	if err != nil {
 		return model.StatusNotSent, errors.New("ошибка отправки текста о срабатывании")
@@ -95,6 +99,9 @@ func handleMotionAlarm(opts EventHandleOpts, e *model.Event) (int, error) {
 }
 
 func handleMotionReady(e *model.Event, opts EventHandleOpts) (int, error) {
+	if !opts.UseNotifier {
+		return model.StatusNotSent, errors.New("отправка уведомлений запрещена")
+	}
 	l, err := fs.GetTodayFileList(opts.TargetDir, model.LayoutISO)
 	if err != nil {
 		opts.Logger.Errorf("Ошибка получения списка файлов в директории %s: %s", opts.TargetDir, err.Error())
