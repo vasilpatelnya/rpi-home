@@ -24,7 +24,7 @@
     }
   },
   "logger": {
-    "show_caller": true,
+    "show_caller": false,
     "level": "debug"
   },
   "sentry_settings": {
