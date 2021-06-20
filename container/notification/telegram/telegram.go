@@ -1,11 +1,11 @@
 package telegram
 
 import (
-	"bytes"
 	"errors"
 	"github.com/onrik/micha"
 	"github.com/vasilpatelnya/rpi-home/container/notification"
 	"github.com/vasilpatelnya/rpi-home/tool/fs"
+	"os"
 )
 
 const (
@@ -62,8 +62,11 @@ func (tg *TGNotifier) SendFile(fp string, m string) error {
 	if !exist {
 		return errors.New("такого файла не существует или указанный путь неверен")
 	}
-	data := bytes.NewBufferString("video data")
-	_, err := tg.michaAPI.SendVideoFile(tg.chatID, data, fp, &micha.SendVideoOptions{Caption: m})
+	file, err := os.Open(fp)
+	if err != nil {
+		return errors.New("reading file: error: " + err.Error())
+	}
+	_, err = tg.michaAPI.SendVideoFile(tg.chatID, file, fp, &micha.SendVideoOptions{Caption: m})
 
 	return err
 }
