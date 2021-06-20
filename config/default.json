@@ -17,10 +17,10 @@
   "database": {
     "type": "mongo",
     "settings": {
-      "uri": "mongodb://127.0.0.1:27018/RpiHome?authSource=admin",
+      "uri": "mongodb://rpihome_mongodb:27017/RpiHome",
       "db": "RpiHome",
-      "connect_attempts": 10,
-      "time_between_attempts": 20
+      "connect_attempts": 3,
+      "time_between_attempts": 1
     }
   },
   "logger": {
