@@ -11,6 +11,10 @@
       "token": "1374299047:AAHBtaVH655eo6U5-3EMNWITK2khY0leev4"
     }
   },
+  "api_server": {
+    "port": 3000,
+    "api_key": "testAPIkey"
+  },
   "periods": {
     "main_ticker_time": 1000
   },

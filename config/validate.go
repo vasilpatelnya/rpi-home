@@ -1,7 +1,8 @@
 package config
 
 import (
-	"github.com/pkg/errors"
+	"errors"
+	"github.com/vasilpatelnya/rpi-home/tool/translate"
 	"time"
 )
 
@@ -72,6 +73,17 @@ func (s SentrySettings) Validate() error {
 	switch {
 	case s.SentryUrl == "":
 		return errors.New("Empty sentry api url")
+	default:
+		return nil
+	}
+}
+
+func (as ApiSettings) Validate() error {
+	switch {
+	case as.Port == 0:
+		return errors.New(translate.Txt(translate.ErrorValidatingAPIPort))
+	case as.ApiKey == "":
+		return errors.New(translate.Txt(translate.ErrorValidatingAPIKey))
 	default:
 		return nil
 	}

@@ -24,6 +24,7 @@ type Config struct {
 	Motion         MotionSettings `json:"motion"`
 	Periods        Periods        `json:"periods"`
 	Database       DbSettings     `json:"database"`
+	ApiServer      ApiSettings    `json:"api_server"`
 	Logger         Logger         `json:"logger"`
 	Notifier       Notifier       `json:"notifier"`
 	SentrySettings SentrySettings `json:"sentry_settings"`
@@ -56,6 +57,11 @@ type SQLite3Settings struct {
 	DBPath              string        `json:"db_path"`
 	ConnectAttempts     int           `json:"connect_attempts"`
 	TimeBetweenAttempts time.Duration `json:"time_between_attempts"`
+}
+
+type ApiSettings struct {
+	Port   int    `json:"port"`
+	ApiKey string `json:"api_key"`
 }
 
 type Logger struct {
