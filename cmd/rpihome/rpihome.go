@@ -1,16 +1,16 @@
 package main
 
 import (
-	"github.com/pkg/errors"
 	"github.com/vasilpatelnya/rpi-home/config"
 	"github.com/vasilpatelnya/rpi-home/container/servicecontainer"
+	"github.com/vasilpatelnya/rpi-home/tool/translate"
 	"log"
 )
 
 func main() {
 	appContainer, err := buildContainer()
 	if err != nil {
-		log.Fatal("Error on try create application container:", err.Error())
+		log.Fatal(translate.T().Text(translate.ErrorCreateContainer), err.Error())
 	}
 	appContainer.Run()
 }
@@ -21,7 +21,7 @@ func buildContainer() (*servicecontainer.ServiceContainer, error) {
 
 	err := c.InitApp()
 	if err != nil {
-		return nil, errors.Wrap(err, "")
+		return nil, err
 	}
 
 	return c, nil

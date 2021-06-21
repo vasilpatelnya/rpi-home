@@ -30,11 +30,11 @@ type EventHandleOpts struct {
 }
 
 func EventHandle(opts EventHandleOpts) {
-	handleEvents(model.StatusFail, opts)
-	handleEvents(model.StatusNew, opts)
+	commonEventsHandler(model.StatusFail, opts)
+	commonEventsHandler(model.StatusNew, opts)
 }
 
-func handleEvents(status int, opts EventHandleOpts) {
+func commonEventsHandler(status int, opts EventHandleOpts) {
 	events, err := opts.Repo.GetAllByStatus(status)
 	if err != nil {
 		sentryhelper.Handle(opts.Logger, err, "Ошибка получения записей событий из БД")

@@ -8,6 +8,7 @@ import (
 	"github.com/vasilpatelnya/rpi-home/model"
 	"github.com/vasilpatelnya/rpi-home/tool/fs"
 	"github.com/vasilpatelnya/rpi-home/tool/jsontool"
+	"github.com/vasilpatelnya/rpi-home/tool/translate"
 	"github.com/vasilpatelnya/rpi-home/usecase"
 	"log"
 	"net/http"
@@ -30,45 +31,59 @@ type ServiceContainer struct {
 	Repo      dataservice.EventData
 }
 
+func text(code int) string {
+	return translate.T().Text(code)
+}
+
+func scErrorMsg(code int, err error) string {
+	return fmt.Sprintf("%s: %s", text(code), err.Error())
+}
+
+func scErrWrap(code int, err error) error {
+	msg := text(code)
+	return errors.New(fmt.Sprintf("%s: %s", msg, err.Error()))
+}
+
 // InitApp initializes container config in the specified path.
 func (sc *ServiceContainer) InitApp() error {
+	err := sc.InitLogger()
+	if err != nil {
+		return scErrWrap(translate.ErrorParsingEnv, err)
+	}
+
 	envMode, err := config.ParseEnvMode()
 	if err != nil {
-		log.Fatalf("Parse environment mode error: %s", err.Error())
+		sc.Logger.Fatal(scErrorMsg(translate.ErrorParsingEnv, err))
 	}
+
 	rootPath, err := fs.RootPath()
 	if err != nil {
-		log.Fatalf("Root path not founded, error: %s", err.Error())
+		sc.Logger.Fatal(scErrorMsg(translate.ErrorRootPath, err))
 	}
+
 	sc.AppConfig, err = config.New(fmt.Sprintf("%s/config/%s.json", rootPath, envMode))
 	if err != nil {
-		return errors.Wrap(err, "Ошибка при загрузке конфигурационного файла:")
+		return scErrWrap(translate.ErrorConfigLoad, err)
 	}
+
 	sc.DB, err = dataservice.AssertCreateConnectionContainer(sc.AppConfig.Database)
 	if err != nil {
-		return errors.Errorf("Create connection container error: %s", err.Error())
+		return scErrWrap(translate.ErrorCreateConnectionContainer, err)
 	}
-	err = sc.InitLogger()
-	if err != nil {
-		return errors.Wrap(err, "Ошибка при инициализации логгера")
-	}
+
 	if sc.AppConfig.Notifier.IsUsing {
 		err = sc.InitNotifier()
 		if err != nil {
-			return errors.Wrap(err, "Ошибка при инициализации модуля отправки уведомлений")
+			return scErrWrap(translate.ErrorNotifierInit, err)
 		}
 	}
 
-	switch {
-	case sc.DB.Mongo != nil:
-		sc.Repo = GetRepo(sc.DB.Mongo, sc.Logger)
-	case sc.DB.SQLite3 != nil:
-		sc.Repo = GetRepo(sc.DB.SQLite3, sc.Logger)
-	default:
-		return errors.New("not found db connection")
+	err = sc.InitRepo()
+	if err != nil {
+		return scErrWrap(translate.ErrorRepoInit, err)
 	}
 
-	go sc.InitApiServer() // todo add chan for manipulations
+	go sc.InitApiServer()
 
 	return nil
 }
@@ -197,6 +212,22 @@ func (sc *ServiceContainer) Run() {
 			}
 			usecase.EventHandle(opts)
 		}
+	}
+}
+
+// InitRepo ...
+func (sc *ServiceContainer) InitRepo() error {
+	switch {
+	case sc.DB.Mongo != nil:
+		sc.Repo = GetRepo(sc.DB.Mongo, sc.Logger)
+
+		return nil
+	case sc.DB.SQLite3 != nil:
+		sc.Repo = GetRepo(sc.DB.SQLite3, sc.Logger)
+
+		return nil
+	default:
+		return errors.New("not found db connection")
 	}
 }
 
