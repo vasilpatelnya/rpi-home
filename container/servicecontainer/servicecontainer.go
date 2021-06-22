@@ -108,7 +108,7 @@ func (sc *ServiceContainer) InitLogger() error {
 // InitApiServer ...
 func (sc *ServiceContainer) InitApiServer() {
 	s := apiserver.New(&apiserver.ApiOpts{
-		Port:     3000,
+		Settings: sc.AppConfig.ApiServer,
 		Repo:     sc.Repo,
 		Logger:   sc.Logger,
 		Notifier: sc.Notifier,

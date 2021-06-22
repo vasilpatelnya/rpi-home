@@ -2,22 +2,29 @@ package config
 
 import (
 	"errors"
+	"fmt"
 	"github.com/vasilpatelnya/rpi-home/tool/translate"
 	"time"
 )
 
+func sectionError(section string, err error) error {
+	msg := fmt.Sprintf("Validate section '%s' error: %s", section, err.Error())
+
+	return errors.New(msg)
+}
+
 func (c Config) Validate() error {
 	switch {
 	case c.Logger.Validate() != nil:
-		return errors.New("Validate section 'logger' error: " + c.Logger.Validate().Error())
+		return sectionError("logger", c.Logger.Validate())
 	case c.Notifier.Validate() != nil:
-		return errors.New("Validate section 'notifier' error: " + c.Notifier.Validate().Error())
+		return sectionError("notifier", c.Notifier.Validate())
 	case c.Motion.Validate() != nil:
-		return errors.New("Validate section 'motion' error: " + c.Motion.Validate().Error())
+		return sectionError("motion", c.Motion.Validate())
 	case c.Periods.Validate() != nil:
-		return errors.New("Validate section 'periods' error: " + c.Periods.Validate().Error())
+		return sectionError("periods", c.Periods.Validate())
 	case c.SentrySettings.Validate() != nil:
-		return errors.New("Validate section 'sentry_settings' error: " + c.SentrySettings.Validate().Error())
+		return sectionError("sentry_settings", c.SentrySettings.Validate())
 	default:
 		return nil
 	}
