@@ -2,10 +2,11 @@ package model
 
 import (
 	"fmt"
-	"github.com/vasilpatelnya/rpi-home/tool/translate"
-	"gopkg.in/mgo.v2/bson"
 	"strings"
 	"time"
+
+	"github.com/vasilpatelnya/rpi-home/tool/translate"
+	"gopkg.in/mgo.v2/bson"
 )
 
 const (
@@ -54,6 +55,7 @@ func (e *Event) GetMotionMessage() string {
 
 func (e *Event) GetVideoReadyMessage() string {
 	tm := time.Unix(e.Created/1000000000, 0)
+	tm.Add(2 * time.Hour)
 	msg := "Видео от " + tm.Format("2 January 2006 15:04")
 	for en, ru := range translate.Months {
 		msg = strings.Replace(msg, en, ru, -1)
