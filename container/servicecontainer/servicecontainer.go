@@ -50,11 +50,6 @@ func (sc *ServiceContainer) InitApp() error {
 		log.Fatal(scErrorMsg(translate.ErrorParsingEnv, err))
 	}
 
-	err = sc.InitLogger()
-	if err != nil {
-		return scErrWrap(translate.ErrorParsingEnv, err)
-	}
-
 	rootPath, err := fs.RootPath()
 	if err != nil {
 		sc.Logger.Fatal(scErrorMsg(translate.ErrorRootPath, err))
@@ -63,6 +58,11 @@ func (sc *ServiceContainer) InitApp() error {
 	sc.AppConfig, err = config.New(fmt.Sprintf("%s/config/%s.json", rootPath, envMode))
 	if err != nil {
 		return scErrWrap(translate.ErrorConfigLoad, err)
+	}
+
+	err = sc.InitLogger()
+	if err != nil {
+		return scErrWrap(translate.ErrorParsingEnv, err)
 	}
 
 	sc.DB, err = dataservice.AssertCreateConnectionContainer(sc.AppConfig.Database)
