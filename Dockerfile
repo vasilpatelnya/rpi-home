@@ -7,6 +7,7 @@ RUN go build -o rpihome ./cmd/rpihome
 
 #PRODUCTION STAGE
 FROM alpine:3.12.0
+RUN apt-get install -y build-essential
 WORKDIR /app
 COPY --from=builder /app/build/rpihome /app/rpihome
 RUN mkdir backup
