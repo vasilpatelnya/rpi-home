@@ -86,6 +86,7 @@ type NotifierOptions struct {
 
 // New ...
 func New(p string) (*Config, error) {
+	log.Printf("Try to load settings from file [%s]", p)
 	c, err := loadSettingsFromFile(p)
 	if err != nil {
 		return nil, err
@@ -121,7 +122,6 @@ func ParseEnvMode() (string, error) {
 
 func loadSettingsFromFile(path string) (*Config, error) {
 	settingsJSON, err := readSettingsFile(path)
-
 	if err != nil {
 		return nil, err
 	}
