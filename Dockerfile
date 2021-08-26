@@ -1,6 +1,6 @@
 #BUILD STAGE
 FROM golang:alpine as builder
-RUN apk add --no-cache --initdb gcc
+RUN apk add --update gcc musl-dev
 RUN export CC=gcc
 WORKDIR /app/build
 COPY . .
