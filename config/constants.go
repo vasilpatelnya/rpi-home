@@ -6,6 +6,7 @@ const (
 	EnvironmentTest        = "test"
 	EnvironmentDevelopment = "development"
 	EnvironmentLocal       = "local"
+	EnvironmentDocker      = "docker"
 	EnvironmentCiMongo     = "ci_mongo"
 	EnvironmentCiSQLites3  = "ci_sqlite3"
 

@@ -16,7 +16,7 @@ import (
 var AppLevels = []string{
 	EnvironmentDefault, EnvironmentProduction, EnvironmentTest,
 	EnvironmentDevelopment, EnvironmentLocal, EnvironmentCiMongo,
-	EnvironmentCiSQLites3,
+	EnvironmentCiSQLites3, EnvironmentDocker,
 }
 
 // Config ...
