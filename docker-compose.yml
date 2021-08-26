@@ -12,7 +12,7 @@ services:
     links:
       - mongodb_rpi
     environment:
-      - ENVIRONMENT=default
+      - ENVIRONMENT=docker
       - RPIHOME_ROOTPATH=/app
       - RPIHOME_LANG=ru
     restart: always

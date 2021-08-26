@@ -1,10 +1,11 @@
 package main
 
 import (
+	"log"
+
 	"github.com/vasilpatelnya/rpi-home/config"
 	"github.com/vasilpatelnya/rpi-home/container/servicecontainer"
 	"github.com/vasilpatelnya/rpi-home/tool/translate"
-	"log"
 )
 
 func main() {
@@ -16,8 +17,7 @@ func main() {
 }
 
 func buildContainer() (*servicecontainer.ServiceContainer, error) {
-	appConfig := config.Config{}
-	c := &servicecontainer.ServiceContainer{AppConfig: &appConfig}
+	c := &servicecontainer.ServiceContainer{AppConfig: &config.Config{}}
 
 	err := c.InitApp()
 	if err != nil {
