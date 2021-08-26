@@ -2,6 +2,8 @@ package servicecontainer
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/vasilpatelnya/rpi-home/container/apiserver"
 	"github.com/vasilpatelnya/rpi-home/dataservice"
 	"github.com/vasilpatelnya/rpi-home/dataservice/event_data/mongodb"
@@ -9,7 +11,6 @@ import (
 	"github.com/vasilpatelnya/rpi-home/tool/fs"
 	"github.com/vasilpatelnya/rpi-home/tool/translate"
 	"github.com/vasilpatelnya/rpi-home/usecase"
-	"time"
 
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
@@ -43,14 +44,14 @@ func scErrWrap(code int, err error) error {
 
 // InitApp initializes container config in the specified path.
 func (sc *ServiceContainer) InitApp() error {
-	err := sc.InitLogger()
-	if err != nil {
-		return scErrWrap(translate.ErrorParsingEnv, err)
-	}
-
 	envMode, err := config.ParseEnvMode()
 	if err != nil {
 		sc.Logger.Fatal(scErrorMsg(translate.ErrorParsingEnv, err))
+	}
+
+	err = sc.InitLogger()
+	if err != nil {
+		return scErrWrap(translate.ErrorParsingEnv, err)
 	}
 
 	rootPath, err := fs.RootPath()
