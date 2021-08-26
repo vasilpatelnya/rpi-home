@@ -1,6 +1,7 @@
 #BUILD STAGE
 FROM golang:alpine as builder
 RUN apk add --no-cache --initdb gcc
+RUN export CC=gcc
 WORKDIR /app/build
 COPY . .
 RUN go mod download
