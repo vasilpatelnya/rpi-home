@@ -13,5 +13,6 @@ WORKDIR /app
 COPY --from=builder /app/build/rpihome /app/rpihome
 RUN mkdir backup
 RUN mkdir config
+RUN mkdir db
 ENV ENVIRONMENT=docker
 CMD ./rpihome

@@ -22,6 +22,7 @@ services:
       - ./config:/app/config
       - /var/lib/motioneye:/var/lib/motioneye
       - ./backup:/app/backup
+      - ./db:/app/db
 
   mongodb_rpi:
     container_name: "rpihome_mongodb"
