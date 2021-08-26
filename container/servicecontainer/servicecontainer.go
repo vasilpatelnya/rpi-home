@@ -2,6 +2,7 @@ package servicecontainer
 
 import (
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/vasilpatelnya/rpi-home/container/apiserver"
@@ -46,7 +47,7 @@ func scErrWrap(code int, err error) error {
 func (sc *ServiceContainer) InitApp() error {
 	envMode, err := config.ParseEnvMode()
 	if err != nil {
-		sc.Logger.Fatal(scErrorMsg(translate.ErrorParsingEnv, err))
+		log.Fatal(scErrorMsg(translate.ErrorParsingEnv, err))
 	}
 
 	err = sc.InitLogger()
