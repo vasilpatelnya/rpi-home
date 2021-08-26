@@ -1,5 +1,6 @@
 #BUILD STAGE
-FROM brianglass/golang-sqlite as builder
+FROM golang:alpine as builder
+RUN apk add --no-cache --initdb gcc
 WORKDIR /app/build
 COPY . .
 RUN go mod download
