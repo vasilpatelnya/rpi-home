@@ -3,7 +3,7 @@ FROM golang:alpine as builder
 WORKDIR /app/build
 COPY . .
 RUN go mod download
-RUN CGO_ENABLED=0 go build -o rpihome ./cmd/rpihome
+RUN go build -o rpihome ./cmd/rpihome
 
 #PRODUCTION STAGE
 FROM alpine:3.12.0
