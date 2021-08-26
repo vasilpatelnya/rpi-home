@@ -1,6 +1,5 @@
 #BUILD STAGE
-FROM golang:alpine as builder
-RUN apt-get install -y build-essential
+FROM brianglass/golang-sqlite as builder
 WORKDIR /app/build
 COPY . .
 RUN go mod download
