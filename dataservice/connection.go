@@ -2,11 +2,12 @@ package dataservice
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/pkg/errors"
 	"github.com/vasilpatelnya/rpi-home/config"
 	"github.com/vasilpatelnya/rpi-home/dataservice/event_data/mongodb"
 	"github.com/vasilpatelnya/rpi-home/dataservice/event_data/sqlite3"
-	"time"
 )
 
 // ConnectionContainer ...
@@ -15,8 +16,8 @@ type ConnectionContainer struct {
 	SQLite3 *sqlite3.SQLite3Connection
 }
 
-// AssertCreateConnectionContainer ...
-func AssertCreateConnectionContainer(c config.DbSettings) (*ConnectionContainer, error) {
+// NewConnectionContainer ...
+func NewConnectionContainer(c config.DbSettings) (*ConnectionContainer, error) {
 	var mongoConnection *mongodb.MongoConnection
 	var sqlite3Connection *sqlite3.SQLite3Connection
 

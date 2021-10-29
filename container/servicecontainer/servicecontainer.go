@@ -65,7 +65,7 @@ func (sc *ServiceContainer) InitApp() error {
 		return scErrWrap(translate.ErrorParsingEnv, err)
 	}
 
-	sc.DB, err = dataservice.AssertCreateConnectionContainer(sc.AppConfig.Database)
+	sc.DB, err = dataservice.NewConnectionContainer(sc.AppConfig.Database)
 	if err != nil {
 		return scErrWrap(translate.ErrorCreateConnectionContainer, err)
 	}

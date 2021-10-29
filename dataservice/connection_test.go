@@ -10,7 +10,7 @@ import (
 func TestAssertCreateConnectionContainer(t *testing.T) {
 	sc, err := testhelpers.GetTestContainer()
 	assert.Nil(t, err)
-	cc, err := dataservice.AssertCreateConnectionContainer(sc.AppConfig.Database)
+	cc, err := dataservice.NewConnectionContainer(sc.AppConfig.Database)
 	assert.Nil(t, err)
 	t.Logf("%+v", cc)
 }

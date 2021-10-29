@@ -19,10 +19,5 @@ func main() {
 func buildContainer() (*servicecontainer.ServiceContainer, error) {
 	c := &servicecontainer.ServiceContainer{AppConfig: &config.Config{}}
 
-	err := c.InitApp()
-	if err != nil {
-		return nil, err
-	}
-
-	return c, nil
+	return c, c.InitApp()
 }

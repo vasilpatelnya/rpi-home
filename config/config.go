@@ -121,20 +121,12 @@ func ParseEnvMode() (string, error) {
 }
 
 func loadSettingsFromFile(path string) (*Config, error) {
-	settingsJSON, err := readSettingsFile(path)
+	settingsJSON, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
 
 	return parseSettingsData(settingsJSON)
-}
-
-func readSettingsFile(filename string) ([]byte, error) {
-	body, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return nil, err
-	}
-	return body, nil
 }
 
 func parseSettingsData(settingsJSON []byte) (*Config, error) {
