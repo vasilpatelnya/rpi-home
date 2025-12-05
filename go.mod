@@ -9,7 +9,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.7
 	github.com/onrik/micha v1.1.1
 	github.com/pkg/errors v0.9.1
-	github.com/sirupsen/logrus v1.7.1
-	github.com/stretchr/testify v1.5.1
+	github.com/sirupsen/logrus v1.8.3
+	github.com/stretchr/testify v1.7.0
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 )
